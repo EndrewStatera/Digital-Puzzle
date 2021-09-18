@@ -14,7 +14,7 @@
 #include <GL/glut.h>
 #endif
 
-// SOIL é a biblioteca para leitura das imagens
+// SOIL é a  biblioteca para leitura das imagens
 #include "SOIL.h"
 
 // Um pixel RGB (24 bits)
