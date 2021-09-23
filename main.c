@@ -59,7 +59,7 @@ int sel;
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2)
+    if (argc < 3)
     {
         printf("transition [origem] [destino]\n");
         printf("Origem é a fonte das cores, destino é a imagem desejada\n");
@@ -74,9 +74,9 @@ int main(int argc, char *argv[])
     // pic[1] -> imagem desejada
     // pic[2] -> resultado do algoritmo
 
-    // Carrega as duas imagens
-    load(argv[1], &pic[DESEJ]);
-    load(argv[2], &pic[ORIGEM]);
+     // Carrega as duas imagens
+    load(argv[1], &pic[ORIGEM]);
+    load(argv[2], &pic[DESEJ]);
 
     // A largura e altura da janela são calculadas de acordo com a maior
     // dimensão de cada imagem
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     // Exemplo de manipulação: inverte as cores na imagem de saída
   
 	for(int i=0; i<tam; i++) {
-        RGB picAtual = pic[DESEJ].img[i];
+       RGB picAtual = pic[DESEJ].img[i];
         int ok = 1;
 
         while (ok)
@@ -143,9 +143,10 @@ int main(int argc, char *argv[])
 
             if (picAtual.r == picParecido.r){
 
-                pic[SAIDA].img[i].r = picParecido.r;
-                pic[SAIDA].img[i].g = picParecido.g;
-                pic[SAIDA].img[i].b = picParecido.b;
+                // mexer aqui
+                pic[SAIDA].img[i].r = picParecido.r - pic[SAIDA].img[i].r; ///
+                pic[SAIDA].img[i].g = picParecido.g - pic[SAIDA].img[i].g;
+                pic[SAIDA].img[i].b = picParecido.b - pic[SAIDA].img[i].b;
 
                 ok = 0;
            }
@@ -153,76 +154,11 @@ int main(int argc, char *argv[])
        }
          
        // pic[SAIDA].img[i].r = 255 - pic[SAIDA].img[i].r;
-       // pic[SAIDA].img[i].g = 255 - pic[SAIDA].img[i].g;
+       //  pic[SAIDA].img[i].g = 255 - pic[SAIDA].img[i].g;
        // pic[SAIDA].img[i].b = 255 - pic[SAIDA].img[i].b;
     }
 
-    // for(int i=0; i<tam; i++) {
-    //     pic[SAIDA].img[i].r = 255 - pic[SAIDA].img[i].r;
-    //     pic[SAIDA].img[i].g = 255 - pic[SAIDA].img[i].g;
-    //     pic[SAIDA].img[i].b = 255 - pic[SAIDA].img[i].b;
-    // }
-
-    for (int i = 0; i < tam; i++)
-    {
-        RGB picAtual = pic[DESEJ].img[i];
-        int ok = 1;
-
-        while (ok)
-        {
-            RGB picParecido = pic[ORIGEM].img[rand() % tam]; //
-
-            if (picAtual.r == picParecido.r)
-            {
-
-                pic[SAIDA].img[i].r = picParecido.r;
-                pic[SAIDA].img[i].g = picParecido.g;
-                pic[SAIDA].img[i].b = picParecido.b;
-
-                ok = 0;
-            }
-        }
-    }
-
-        // for (int i = 0; i < (tam - 1) / 2; i++)
-        // {
-        //     unsigned char auxR = pic[SAIDA].img[i].r;
-        //     unsigned char auxG = pic[SAIDA].img[i].g;
-        //     unsigned char auxB = pic[SAIDA].img[i].b;
-
-        //     pic[SAIDA].img[i].r = pic[SAIDA].img[tam - 1 -i].r;
-        //     pic[SAIDA].img[i].g = pic[SAIDA].img[tam - 1 -i].g;
-        //     pic[SAIDA].img[i].b = pic[SAIDA].img[tam - 1 -i].b;
-        //     pic[SAIDA].img[i].r = auxR;
-        //     pic[SAIDA].img[i].g = auxG;
-        //     pic[SAIDA].img[i].b = auxB;
-        // }
-        //    for(int i = 0; i < tam; i++){
-        //        RGB maisParecido = pic[SAIDA].img[i];
-        //        RGB pixAtual = pic[DESEJ].img[i];
-        //        int maisP = (maisParecido.b +  maisParecido.r + maisParecido.g);
-        //        int pixASoma = (pixAtual.b +  pixAtual.r + pixAtual.g);
-        //        unsigned char diferenca = pixASoma - maisP;
-        //        for(int j = i; j < tam; j++){
-        //            RGB pixTeste = pic[SAIDA].img[j];
-        //            int pixTesteSoma = (pixTeste.b +  pixTeste.r + pixTeste.g);
-        //            unsigned char diferencaTeste = pixASoma - pixTesteSoma;
-        //             if(diferenca / 3 > diferencaTeste / 3){
-        //                 unsigned char auxR = pixTeste.r;
-        //                 unsigned char auxG = pixTeste.g;
-        //                 unsigned char auxB = pixTeste.b;
-
-        //                 pic[SAIDA].img[j].r = pic[SAIDA].img[i].r;
-        //                 pic[SAIDA].img[j].g = pic[SAIDA].img[i].g;
-        //                 pic[SAIDA].img[j].b = pic[SAIDA].img[i].b;
-        //                 pic[SAIDA].img[i].r = auxR;
-        //                 pic[SAIDA].img[i].g = auxG;
-        //                 pic[SAIDA].img[i].b = auxB;
-        //                 maisParecido = pixTeste;
-        //                 maisP = pixTesteSoma;
-        //             }
-        //        }
-        //    }
+    
 
         // NÃO ALTERAR A PARTIR DAQUI!
 
