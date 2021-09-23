@@ -14,7 +14,7 @@
 #include <GL/glut.h>
 #endif
 
-// SOIL é a  biblioteca para leitura das imagens
+// SOIL é a biblioteca para leitura das imagens
 #include "SOIL.h"
 
 // Um pixel RGB (24 bits)
@@ -75,8 +75,8 @@ int main(int argc, char *argv[])
     // pic[2] -> resultado do algoritmo
 
     // Carrega as duas imagens
-    load(argv[1], &pic[DESEJ]);
-    load(argv[2], &pic[ORIGEM]);
+    load(argv[1], &pic[ORIGEM]);
+    load(argv[2], &pic[DESEJ]);
 
     // A largura e altura da janela são calculadas de acordo com a maior
     // dimensão de cada imagem
@@ -132,38 +132,15 @@ int main(int argc, char *argv[])
     // ...
     //
     // Exemplo de manipulação: inverte as cores na imagem de saída
-  
+    /*
 	for(int i=0; i<tam; i++) {
-        RGB picAtual = pic[DESEJ].img[i];
-        int ok = 1;
-
-        while (ok)
-        {
-            RGB picParecido = pic[ORIGEM].img[rand() % tam]; //
-
-            if (picAtual.r == picParecido.r){
-
-                pic[SAIDA].img[i].r = picParecido.r;
-                pic[SAIDA].img[i].g = picParecido.g;
-                pic[SAIDA].img[i].b = picParecido.b;
-
-                ok = 0;
-           }
-
-       }
-         
-       // pic[SAIDA].img[i].r = 255 - pic[SAIDA].img[i].r;
-       // pic[SAIDA].img[i].g = 255 - pic[SAIDA].img[i].g;
-       // pic[SAIDA].img[i].b = 255 - pic[SAIDA].img[i].b;
+        pic[SAIDA].img[i].r = 255 - pic[SAIDA].img[i].r;
+        pic[SAIDA].img[i].g = 255 - pic[SAIDA].img[i].g;
+        pic[SAIDA].img[i].b = 255 - pic[SAIDA].img[i].b;
     }
+    */
 
-    // for(int i=0; i<tam; i++) {
-    //     pic[SAIDA].img[i].r = 255 - pic[SAIDA].img[i].r;
-    //     pic[SAIDA].img[i].g = 255 - pic[SAIDA].img[i].g;
-    //     pic[SAIDA].img[i].b = 255 - pic[SAIDA].img[i].b;
-    // }
-
-    for (int i = 0; i < tam; i++)
+   for (int i = 0; i < tam; i++)
     {
         RGB picAtual = pic[DESEJ].img[i];
         int ok = 1;
@@ -184,207 +161,167 @@ int main(int argc, char *argv[])
         }
     }
 
-        // for (int i = 0; i < (tam - 1) / 2; i++)
-        // {
-        //     unsigned char auxR = pic[SAIDA].img[i].r;
-        //     unsigned char auxG = pic[SAIDA].img[i].g;
-        //     unsigned char auxB = pic[SAIDA].img[i].b;
+    // NÃO ALTERAR A PARTIR DAQUI!
 
-        //     pic[SAIDA].img[i].r = pic[SAIDA].img[tam - 1 -i].r;
-        //     pic[SAIDA].img[i].g = pic[SAIDA].img[tam - 1 -i].g;
-        //     pic[SAIDA].img[i].b = pic[SAIDA].img[tam - 1 -i].b;
-        //     pic[SAIDA].img[i].r = auxR;
-        //     pic[SAIDA].img[i].g = auxG;
-        //     pic[SAIDA].img[i].b = auxB;
-        // }
-        //    for(int i = 0; i < tam; i++){
-        //        RGB maisParecido = pic[SAIDA].img[i];
-        //        RGB pixAtual = pic[DESEJ].img[i];
-        //        int maisP = (maisParecido.b +  maisParecido.r + maisParecido.g);
-        //        int pixASoma = (pixAtual.b +  pixAtual.r + pixAtual.g);
-        //        unsigned char diferenca = pixASoma - maisP;
-        //        for(int j = i; j < tam; j++){
-        //            RGB pixTeste = pic[SAIDA].img[j];
-        //            int pixTesteSoma = (pixTeste.b +  pixTeste.r + pixTeste.g);
-        //            unsigned char diferencaTeste = pixASoma - pixTesteSoma;
-        //             if(diferenca / 3 > diferencaTeste / 3){
-        //                 unsigned char auxR = pixTeste.r;
-        //                 unsigned char auxG = pixTeste.g;
-        //                 unsigned char auxB = pixTeste.b;
+    // Cria textura para a imagem de saída
+    tex[SAIDA] = SOIL_create_OGL_texture((unsigned char *)pic[SAIDA].img, pic[SAIDA].width, pic[SAIDA].height, SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID, 0);
+    // Grava imagem de saída em out.bmp, para conferência
+    SOIL_save_image("out.bmp", SOIL_SAVE_TYPE_BMP, pic[SAIDA].width, pic[SAIDA].height, 3, (const unsigned char *)pic[SAIDA].img);
 
-        //                 pic[SAIDA].img[j].r = pic[SAIDA].img[i].r;
-        //                 pic[SAIDA].img[j].g = pic[SAIDA].img[i].g;
-        //                 pic[SAIDA].img[j].b = pic[SAIDA].img[i].b;
-        //                 pic[SAIDA].img[i].r = auxR;
-        //                 pic[SAIDA].img[i].g = auxG;
-        //                 pic[SAIDA].img[i].b = auxB;
-        //                 maisParecido = pixTeste;
-        //                 maisP = pixTesteSoma;
-        //             }
-        //        }
-        //    }
+    // Entra no loop de eventos, não retorna
+    glutMainLoop();
+}
 
-        // NÃO ALTERAR A PARTIR DAQUI!
-
-        // Cria textura para a imagem de saída
-        tex[SAIDA] = SOIL_create_OGL_texture((unsigned char *)pic[SAIDA].img, pic[SAIDA].width, pic[SAIDA].height, SOIL_LOAD_RGB, SOIL_CREATE_NEW_ID, 0);
-        // Grava imagem de saída em out.bmp, para conferência
-        SOIL_save_image("out.bmp", SOIL_SAVE_TYPE_BMP, pic[SAIDA].width, pic[SAIDA].height, 3, (const unsigned char *)pic[SAIDA].img);
-
-        // Entra no loop de eventos, não retorna
-        glutMainLoop();
-    }
-
-    // Carrega uma imagem para a struct Img
-    void load(char *name, Img *pic)
+// Carrega uma imagem para a struct Img
+void load(char *name, Img *pic)
+{
+    int chan;
+    pic->img = (RGB *)SOIL_load_image(name, &pic->width, &pic->height, &chan, SOIL_LOAD_RGB);
+    if (!pic->img)
     {
-        int chan;
-        pic->img = (RGB *)SOIL_load_image(name, &pic->width, &pic->height, &chan, SOIL_LOAD_RGB);
-        if (!pic->img)
+        printf("SOIL loading error: '%s'\n", SOIL_last_result());
+        exit(1);
+    }
+    printf("Load: %d x %d x %d\n", pic->width, pic->height, chan);
+}
+
+// Verifica se o algoritmo foi aplicado corretamente:
+// Ordena os pixels da imagem origem e de saída por R, G e B;
+// depois compara uma com a outra: devem ser iguais
+void valida()
+{
+    int ok = 1;
+    int size = pic[ORIGEM].width * pic[ORIGEM].height;
+    // Aloca memória para os dois arrays
+    RGB *aux1 = malloc(size * 3);
+    RGB *aux2 = malloc(size * 3);
+    // Copia os pixels originais
+    memcpy(aux1, pic[ORIGEM].img, size * 3);
+    memcpy(aux2, pic[SAIDA].img, size * 3);
+    // Mostra primeiros 8 pixels de ambas as imagens
+    // antes de ordenar (teste)
+    for (int i = 0; i < 8; i++)
+        printf("[%02X %02X %02X] ", aux1[i].r, aux1[i].g, aux1[i].b);
+    printf("\n");
+    for (int i = 0; i < 8; i++)
+        printf("[%02X %02X %02X] ", aux2[i].r, aux2[i].g, aux2[i].b);
+    printf("\n");
+    printf("Validando...\n");
+    // Ordena ambos os arrays
+    qsort(aux1, size, sizeof(RGB), cmp);
+    qsort(aux2, size, sizeof(RGB), cmp);
+    // Mostra primeiros 8 pixels de ambas as imagens
+    // depois de ordenar
+    for (int i = 0; i < 8; i++)
+        printf("[%02X %02X %02X] ", aux1[i].r, aux1[i].g, aux1[i].b);
+    printf("\n");
+    for (int i = 0; i < 8; i++)
+        printf("[%02X %02X %02X] ", aux2[i].r, aux2[i].g, aux2[i].b);
+    printf("\n");
+    for (int i = 0; i < size; i++)
+    {
+        if (aux1[i].r != aux2[i].r ||
+            aux1[i].g != aux2[i].g ||
+            aux1[i].b != aux2[i].b)
         {
-            printf("SOIL loading error: '%s'\n", SOIL_last_result());
-            exit(1);
+            // Se pelo menos um dos pixels for diferente, o algoritmo foi aplicado incorretamente
+            printf("*** INVÁLIDO na posição %d ***: %02X %02X %02X -> %02X %02X %02X\n",
+                   i, aux1[i].r, aux1[i].g, aux1[i].b, aux2[i].r, aux2[i].g, aux2[i].b);
+            ok = 0;
+            break;
         }
-        printf("Load: %d x %d x %d\n", pic->width, pic->height, chan);
     }
+    // Libera memória dos arrays ordenados
+    free(aux1);
+    free(aux2);
+    if (ok)
+        printf(">>>> TRANSFORMAÇÃO VÁLIDA <<<<<\n");
+}
 
-    // Verifica se o algoritmo foi aplicado corretamente:
-    // Ordena os pixels da imagem origem e de saída por R, G e B;
-    // depois compara uma com a outra: devem ser iguais
-    void valida()
+// Funcao de comparacao para qsort: ordena por R, G, B (desempate nessa ordem)
+int cmp(const void *elem1, const void *elem2)
+{
+    RGB *ptr1 = (RGB *)elem1;
+    RGB *ptr2 = (RGB *)elem2;
+    unsigned char r1 = ptr1->r;
+    unsigned char r2 = ptr2->r;
+    unsigned char g1 = ptr1->g;
+    unsigned char g2 = ptr2->g;
+    unsigned char b1 = ptr1->b;
+    unsigned char b2 = ptr2->b;
+    int r = 0;
+    if (r1 < r2)
+        r = -1;
+    else if (r1 > r2)
+        r = 1;
+    else if (g1 < g2)
+        r = -1;
+    else if (g1 > g2)
+        r = 1;
+    else if (b1 < b2)
+        r = -1;
+    else if (b1 > b2)
+        r = 1;
+    return r;
+}
+
+//
+// Funções de callback da OpenGL
+//
+// SÓ ALTERE SE VOCÊ TIVER ABSOLUTA CERTEZA DO QUE ESTÁ FAZENDO!
+//
+
+// Gerencia eventos de teclado
+void keyboard(unsigned char key, int x, int y)
+{
+    if (key == 27)
     {
-        int ok = 1;
-        int size = pic[ORIGEM].width * pic[ORIGEM].height;
-        // Aloca memória para os dois arrays
-        RGB *aux1 = malloc(size * 3);
-        RGB *aux2 = malloc(size * 3);
-        // Copia os pixels originais
-        memcpy(aux1, pic[ORIGEM].img, size * 3);
-        memcpy(aux2, pic[SAIDA].img, size * 3);
-        // Mostra primeiros 8 pixels de ambas as imagens
-        // antes de ordenar (teste)
-        for (int i = 0; i < 8; i++)
-            printf("[%02X %02X %02X] ", aux1[i].r, aux1[i].g, aux1[i].b);
-        printf("\n");
-        for (int i = 0; i < 8; i++)
-            printf("[%02X %02X %02X] ", aux2[i].r, aux2[i].g, aux2[i].b);
-        printf("\n");
-        printf("Validando...\n");
-        // Ordena ambos os arrays
-        qsort(aux1, size, sizeof(RGB), cmp);
-        qsort(aux2, size, sizeof(RGB), cmp);
-        // Mostra primeiros 8 pixels de ambas as imagens
-        // depois de ordenar
-        for (int i = 0; i < 8; i++)
-            printf("[%02X %02X %02X] ", aux1[i].r, aux1[i].g, aux1[i].b);
-        printf("\n");
-        for (int i = 0; i < 8; i++)
-            printf("[%02X %02X %02X] ", aux2[i].r, aux2[i].g, aux2[i].b);
-        printf("\n");
-        for (int i = 0; i < size; i++)
-        {
-            if (aux1[i].r != aux2[i].r ||
-                aux1[i].g != aux2[i].g ||
-                aux1[i].b != aux2[i].b)
-            {
-                // Se pelo menos um dos pixels for diferente, o algoritmo foi aplicado incorretamente
-                printf("*** INVÁLIDO na posição %d ***: %02X %02X %02X -> %02X %02X %02X\n",
-                       i, aux1[i].r, aux1[i].g, aux1[i].b, aux2[i].r, aux2[i].g, aux2[i].b);
-                ok = 0;
-                break;
-            }
-        }
-        // Libera memória dos arrays ordenados
-        free(aux1);
-        free(aux2);
-        if (ok)
-            printf(">>>> TRANSFORMAÇÃO VÁLIDA <<<<<\n");
+        // ESC: libera memória e finaliza
+        free(pic[0].img);
+        free(pic[1].img);
+        free(pic[2].img);
+        exit(1);
     }
+    if (key >= '1' && key <= '3')
+        // 1-3: seleciona a imagem correspondente (origem, desejada e saída)
+        sel = key - '1';
+    // V para validar a solução
+    if (key == 'v')
+        valida();
+    glutPostRedisplay();
+}
 
-    // Funcao de comparacao para qsort: ordena por R, G, B (desempate nessa ordem)
-    int cmp(const void *elem1, const void *elem2)
-    {
-        RGB *ptr1 = (RGB *)elem1;
-        RGB *ptr2 = (RGB *)elem2;
-        unsigned char r1 = ptr1->r;
-        unsigned char r2 = ptr2->r;
-        unsigned char g1 = ptr1->g;
-        unsigned char g2 = ptr2->g;
-        unsigned char b1 = ptr1->b;
-        unsigned char b2 = ptr2->b;
-        int r = 0;
-        if (r1 < r2)
-            r = -1;
-        else if (r1 > r2)
-            r = 1;
-        else if (g1 < g2)
-            r = -1;
-        else if (g1 > g2)
-            r = 1;
-        else if (b1 < b2)
-            r = -1;
-        else if (b1 > b2)
-            r = 1;
-        return r;
-    }
+// Callback de redesenho da tela
+void draw()
+{
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Preto
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //
-    // Funções de callback da OpenGL
-    //
-    // SÓ ALTERE SE VOCÊ TIVER ABSOLUTA CERTEZA DO QUE ESTÁ FAZENDO!
-    //
+    // Para outras cores, veja exemplos em /etc/X11/rgb.txt
 
-    // Gerencia eventos de teclado
-    void keyboard(unsigned char key, int x, int y)
-    {
-        if (key == 27)
-        {
-            // ESC: libera memória e finaliza
-            free(pic[0].img);
-            free(pic[1].img);
-            free(pic[2].img);
-            exit(1);
-        }
-        if (key >= '1' && key <= '3')
-            // 1-3: seleciona a imagem correspondente (origem, desejada e saída)
-            sel = key - '1';
-        // V para validar a solução
-        if (key == 'v')
-            valida();
-        glutPostRedisplay();
-    }
+    glColor3ub(255, 255, 255); // branco
 
-    // Callback de redesenho da tela
-    void draw()
-    {
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Preto
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Ativa a textura corresponde à imagem desejada
+    glBindTexture(GL_TEXTURE_2D, tex[sel]);
+    // E desenha um retângulo que ocupa toda a tela
+    glEnable(GL_TEXTURE_2D);
+    glBegin(GL_QUADS);
 
-        // Para outras cores, veja exemplos em /etc/X11/rgb.txt
+    glTexCoord2f(0, 0);
+    glVertex2f(0, 0);
 
-        glColor3ub(255, 255, 255); // branco
+    glTexCoord2f(1, 0);
+    glVertex2f(pic[sel].width, 0);
 
-        // Ativa a textura corresponde à imagem desejada
-        glBindTexture(GL_TEXTURE_2D, tex[sel]);
-        // E desenha um retângulo que ocupa toda a tela
-        glEnable(GL_TEXTURE_2D);
-        glBegin(GL_QUADS);
+    glTexCoord2f(1, 1);
+    glVertex2f(pic[sel].width, pic[sel].height);
 
-        glTexCoord2f(0, 0);
-        glVertex2f(0, 0);
+    glTexCoord2f(0, 1);
+    glVertex2f(0, pic[sel].height);
 
-        glTexCoord2f(1, 0);
-        glVertex2f(pic[sel].width, 0);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
 
-        glTexCoord2f(1, 1);
-        glVertex2f(pic[sel].width, pic[sel].height);
-
-        glTexCoord2f(0, 1);
-        glVertex2f(0, pic[sel].height);
-
-        glEnd();
-        glDisable(GL_TEXTURE_2D);
-
-        // Exibe a imagem
-        glutSwapBuffers();
-    }
+    // Exibe a imagem
+    glutSwapBuffers();
+}
