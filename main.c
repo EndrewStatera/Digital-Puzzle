@@ -132,13 +132,31 @@ int main(int argc, char *argv[])
     // ...
     //
     // Exemplo de manipulação: inverte as cores na imagem de saída
-    /*
+    
 	for(int i=0; i<tam; i++) {
-        pic[SAIDA].img[i].r = 255 - pic[SAIDA].img[i].r;
-        pic[SAIDA].img[i].g = 255 - pic[SAIDA].img[i].g;
-        pic[SAIDA].img[i].b = 255 - pic[SAIDA].img[i].b;
+        RGB picAtual = pic[DESEJ].img[i];
+        int ok = 1;
+
+        while (ok)
+        {
+            RGB picParecido = pic[ORIGEM].img[rand() % tam]; //
+
+            if (picAtual.r == picParecido.r){
+
+                pic[SAIDA].img[i].r = picParecido.r;
+                pic[SAIDA].img[i].g = picParecido.g;
+                pic[SAIDA].img[i].b = picParecido.b;
+
+                ok = 0;
+           }
+
+       }
+         
+       // pic[SAIDA].img[i].r = 255 - pic[SAIDA].img[i].r;
+       // pic[SAIDA].img[i].g = 255 - pic[SAIDA].img[i].g;
+       // pic[SAIDA].img[i].b = 255 - pic[SAIDA].img[i].b;
     }
-    */
+    
 
     // NÃO ALTERAR A PARTIR DAQUI!
 
