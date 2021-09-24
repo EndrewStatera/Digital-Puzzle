@@ -51,7 +51,11 @@ Img pic[3];
 
 // Imagem selecionada (0,1,2)
 int sel;
+//meus metodos
 
+void mapeamentoFor(int tam);
+void inverteImagem(int tam);
+int valeTroca(int i, int j, int k);
 // Enums para facilitar o acesso às imagens
 #define ORIGEM 0
 #define DESEJ 1
@@ -75,8 +79,8 @@ int main(int argc, char *argv[])
     // pic[2] -> resultado do algoritmo
 
     // Carrega as duas imagens
-    load(argv[1], &pic[ORIGEM]);
-    load(argv[2], &pic[DESEJ]);
+    load(argv[1], &pic[DESEJ]);
+    load(argv[2], &pic[ORIGEM]);
 
     // A largura e altura da janela são calculadas de acordo com a maior
     // dimensão de cada imagem
@@ -132,34 +136,133 @@ int main(int argc, char *argv[])
     // ...
     //
     // Exemplo de manipulação: inverte as cores na imagem de saída
-    /*
-	for(int i=0; i<tam; i++) {
-        pic[SAIDA].img[i].r = 255 - pic[SAIDA].img[i].r;
-        pic[SAIDA].img[i].g = 255 - pic[SAIDA].img[i].g;
-        pic[SAIDA].img[i].b = 255 - pic[SAIDA].img[i].b;
-    }
-    */
 
-   for (int i = 0; i < tam; i++)
-    {
-        RGB picAtual = pic[DESEJ].img[i];
-        int ok = 1;
+    // for(int i=0; i<tam; i++) {
+    //     pic[SAIDA].img[i].r = 255 - pic[SAIDA].img[i].r;
+    //     pic[SAIDA].img[i].g = 255 - pic[SAIDA].img[i].g;
+    //     pic[SAIDA].img[i].b = 255 - pic[SAIDA].img[i].b;
+    // }
 
-        while (ok)
-        {
-            RGB picParecido = pic[ORIGEM].img[rand() % tam]; //
+    // for (int i = 0; i < tam; i++)
+    // {
+    //     RGB picAtual = pic[DESEJ].img[i];
+    //     int ok = 1;
 
-            if (picAtual.r == picParecido.r)
-            {
+    //     while (ok)
+    //     {
+    //         int indice = rand() % tam;
+    //         RGB picParecido = pic[SAIDA].img[indice]; //
 
-                pic[SAIDA].img[i].r = picParecido.r;
-                pic[SAIDA].img[i].g = picParecido.g;
-                pic[SAIDA].img[i].b = picParecido.b;
+    //         if (picAtual.r == picParecido.r)
+    //         {
+    //             unsigned int auxR = pic[SAIDA].img[indice].r;
+    //             unsigned int auxG = pic[SAIDA].img[indice].g;
+    //             unsigned int auxB = pic[SAIDA].img[indice].b;
 
-                ok = 0;
-            }
-        }
-    }
+    //             pic[SAIDA].img[indice].r = pic[SAIDA].img[i].r;
+    //             pic[SAIDA].img[indice].g = pic[SAIDA].img[i].g;
+    //             pic[SAIDA].img[indice].b = pic[SAIDA].img[i].b;
+
+    //             pic[SAIDA].img[i].r = auxR;
+    //             pic[SAIDA].img[i].g = auxG;
+    //             pic[SAIDA].img[i].b = auxB;
+
+    //             ok = 0;
+    //         }
+    //     }
+    // }
+
+    // for(int i = 0; i < tam; i++){
+    //     pic[SAIDA].img[i].r = pic[DESEJ].img[i].r;
+    //     if(i % 2 == 0){
+    //         pic[SAIDA].img[i].g = pic[DESEJ].img[i].g;
+    //     }
+    // }
+
+    // for (int i = 0; i < (tam - 1) / 2; i++)
+    // {
+    //     unsigned char auxR = pic[SAIDA].img[i].r;
+    //     unsigned char auxG = pic[SAIDA].img[i].g;
+    //     unsigned char auxB = pic[SAIDA].img[i].b;
+
+    //     pic[SAIDA].img[i].r = pic[SAIDA].img[tam - 1 -i].r;
+    //     pic[SAIDA].img[i].g = pic[SAIDA].img[tam - 1 -i].g;
+    //     pic[SAIDA].img[i].b = pic[SAIDA].img[tam - 1 -i].b;
+    //     pic[SAIDA].img[tam - 1 -i].r = auxR;
+    //     pic[SAIDA].img[tam - 1 -i].g = auxG;
+    //     pic[SAIDA].img[tam - 1 -i].b = auxB;
+    // }
+
+    unsigned int ganho = 900;
+    // for(int i = 0; i < 50; i++){
+    //     RGB* pixAtual = &pic[DESEJ].img[i];
+    //     int soma = (pixAtual->b + pixAtual->r + pixAtual->g);
+    //     RGB* pixMaisParecido = &pic[SAIDA].img[i];
+    //     int somaParecido = (pixMaisParecido->b + pixMaisParecido ->g + pixMaisParecido->r);
+    //     unsigned int diferenca = abs(soma - somaParecido);
+
+    //     for(int j = i + 1; j < tam / 2; i++){
+    //         RGB* pixTeste = &pic[SAIDA].img[j];
+    //         int somaTeste = (pixTeste->b + pixTeste ->g + pixTeste->r);
+    //         if(diferenca > abs(somaTeste - soma)){
+    //             // unsigned char auxR = pixMaisParecido->r;
+    //             // unsigned char auxG = pixMaisParecido->g;
+    //             // unsigned char auxB = pixMaisParecido->b;
+
+    //             // pixMaisParecido->r = pixTeste->r;
+    //             // pixMaisParecido->g = pixTeste->g;
+    //             // pixMaisParecido->b = pixTeste->b;
+
+    //             // pixTeste->r = auxR;
+    //             // pixTeste->g = auxG;
+    //             // pixTeste->b = auxB;
+    //             pixMaisParecido = pixTeste;
+    //             diferenca = abs(somaTeste - soma);
+    //         }
+    //     }
+    //     if(diferenca < abs(somaParecido - soma)){
+    //             unsigned char auxR = pixMaisParecido->r;
+    //             unsigned char auxG = pixMaisParecido->g;
+    //             unsigned char auxB = pixMaisParecido->b;
+
+    //             pixMaisParecido->r = pic[SAIDA].img[i].r;
+    //             pixMaisParecido->g = pic[SAIDA].img[i].g;
+    //             pixMaisParecido->b = pic[SAIDA].img[i].b;
+
+    //             pic[SAIDA].img[i].r = auxR;
+    //             pic[SAIDA].img[i].g = auxG;
+    //             pic[SAIDA].img[i].b = auxB;
+    //         }
+    // }
+    mapeamentoFor(tam);
+    //inverteImagem(tam);
+
+    //    for(int i = 0; i < tam; i++){
+    //        RGB maisParecido = pic[SAIDA].img[i];
+    //        RGB pixAtual = pic[DESEJ].img[i];
+    //        int maisP = (maisParecido.b +  maisParecido.r + maisParecido.g);
+    //        int pixASoma = (pixAtual.b +  pixAtual.r + pixAtual.g);
+    //        unsigned char diferenca = pixASoma - maisP;
+    //        for(int j = i; j < tam; j++){
+    //            RGB pixTeste = pic[SAIDA].img[j];
+    //            int pixTesteSoma = (pixTeste.b +  pixTeste.r + pixTeste.g);
+    //            unsigned char diferencaTeste = pixASoma - pixTesteSoma;
+    //             if(diferenca / 3 > diferencaTeste / 3){
+    //                 unsigned char auxR = pixTeste.r;
+    //                 unsigned char auxG = pixTeste.g;
+    //                 unsigned char auxB = pixTeste.b;
+
+    //                 pic[SAIDA].img[j].r = pic[SAIDA].img[i].r;
+    //                 pic[SAIDA].img[j].g = pic[SAIDA].img[i].g;
+    //                 pic[SAIDA].img[j].b = pic[SAIDA].img[i].b;
+    //                 pic[SAIDA].img[i].r = auxR;
+    //                 pic[SAIDA].img[i].g = auxG;
+    //                 pic[SAIDA].img[i].b = auxB;
+    //                 maisParecido = pixTeste;
+    //                 maisP = pixTesteSoma;
+    //             }
+    //        }
+    //    }
 
     // NÃO ALTERAR A PARTIR DAQUI!
 
@@ -263,6 +366,96 @@ int cmp(const void *elem1, const void *elem2)
     else if (b1 > b2)
         r = 1;
     return r;
+}
+
+void mapeamentoFor(int tam)
+{
+    for (int i = 0; i < tam; i++)
+    {
+        RGB* pixAtual = &(pic[DESEJ].img[i]);
+        int soma = (pixAtual->b + pixAtual->r + pixAtual->g);
+        RGB* pixMaisParecido = &(pic[SAIDA].img[i]);
+        int somaParecido = (pixMaisParecido->b + pixMaisParecido->g + pixMaisParecido->r);
+        unsigned int diferenca = abs(soma - somaParecido);
+        unsigned int diferencaI = diferenca;
+        //pixMaisParecido->b = 0;
+
+        for (int j = 0; j < tam; j++)
+        {
+            RGB *pixTeste = &(pic[SAIDA].img[j]);
+            int somaTeste = (pixTeste->b + pixTeste->g + pixTeste->r);
+            // pixTeste->b = 0;
+            // pixTeste->r = 0;
+            // pixTeste->g = 0;
+            int sucesso = 0;
+            int diferencaTroca = abs(somaParecido - somaTeste);
+            if (diferenca > abs(somaTeste - soma) && diferencaTroca < diferenca + 15)
+            {
+                pixMaisParecido = pixTeste;
+                diferenca = abs(somaTeste - soma);
+                sucesso++;
+                if(sucesso >= 5)break;
+            }
+        }
+        if (diferenca < diferencaI)
+        {
+            unsigned char auxR = pixMaisParecido->r;
+            unsigned char auxG = pixMaisParecido->g;
+            unsigned char auxB = pixMaisParecido->b;
+
+            (*pixMaisParecido).r = pic[SAIDA].img[i].r;
+            (*pixMaisParecido).g = pic[SAIDA].img[i].g;
+            (*pixMaisParecido).b = pic[SAIDA].img[i].b;
+
+            pic[SAIDA].img[i].r = auxR;
+            pic[SAIDA].img[i].g = auxG;
+            pic[SAIDA].img[i].b = auxB;
+        }
+    }
+}
+
+void inverteImagem(int tam)
+{
+    for (int i = 0; i < (tam - 1) / 2; i++)
+    {
+        unsigned char auxR = pic[SAIDA].img[i].r;
+        unsigned char auxG = pic[SAIDA].img[i].g;
+        unsigned char auxB = pic[SAIDA].img[i].b;
+
+        pic[SAIDA].img[i].r = pic[SAIDA].img[tam - 1 - i].r;
+        pic[SAIDA].img[i].g = pic[SAIDA].img[tam - 1 - i].g;
+        pic[SAIDA].img[i].b = pic[SAIDA].img[tam - 1 - i].b;
+        pic[SAIDA].img[tam - 1 - i].r = auxR;
+        pic[SAIDA].img[tam - 1 - i].g = auxG;
+        pic[SAIDA].img[tam - 1 - i].b = auxB;
+    }
+}
+
+int valeTroca(int i, int j, int k){
+    RGB* rgb1 = &pic[DESEJ].img[i];
+    RGB* rgb2 = &pic[SAIDA].img[j];
+    RGB* rgb3 = &pic[SAIDA].img[k];
+
+    unsigned char desejR = rgb1->r;
+    unsigned char desejG = rgb1->g;
+    unsigned char desejB = rgb1->b;
+
+    unsigned char r1 = rgb1->r;
+    unsigned char g1 = rgb1->g;
+    unsigned char b1 = rgb1->b;
+
+    unsigned char r2 = rgb2->r;
+    unsigned char g2 = rgb2->g;
+    unsigned char b2 = rgb2->b;
+
+    if(abs(desejR) - abs(r1) < abs(desejR) - abs(r2)){
+        if(abs(desejG) - abs(g1) < abs(desejG) - abs(g2)){
+
+        }else{
+
+        }
+    }
+    return 0;
 }
 
 //
