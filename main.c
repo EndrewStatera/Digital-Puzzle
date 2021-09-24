@@ -316,7 +316,7 @@ void mapeamentoRandom(int tam)
         for (int i = 0; i < tam; i++)
         {
             RGB picAtual = pic[DESEJ].img[i];
-            for (int j = 0; j < 25; j++)
+            for (int j = 0; j < 35; j++)
             {
                 int indice = rand() % tam;
                 RGB picParecido = pic[SAIDA].img[indice]; //
@@ -339,7 +339,7 @@ void mapeamentoRandom(int tam)
                 }
             }
         }
-    } while (sucessos > 48000);
+    } while (sucessos > 60000);
 }
 
 void inverteImagem(int tam)
