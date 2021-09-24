@@ -134,53 +134,56 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < tam; i++)
     {
-
+        
         RGB picDesejado = pic[ORIGEM].img[i];
 
         for (int j = 0; j < tam; j++)
         {
             RGB picParecido = pic[DESEJ].img[j]; //rand() %tam
 
-            if (picDesejado.r - picParecido.r <= 10 && picDesejado.r - picParecido.r >= -10)
+            if (picDesejado.r - picParecido.r <= 5 && picDesejado.r - picParecido.r >= -5)
             {
-                if (picDesejado.g - picParecido.g <= 10 && picDesejado.g - picParecido.g >= -10)
-                {
-                    if (picDesejado.b - picParecido.b <= 10 && picDesejado.b - picParecido.b >= -10)
-                    {
-                        pic[SAIDA].img[i].r = picParecido.r;
-                        pic[SAIDA].img[i].g = picParecido.g;
-                        pic[SAIDA].img[i].b = picParecido.b;
-                        break;
-                    }
-                }
-            }else if(picDesejado.r - picParecido.r <= 20 && picDesejado.r - picParecido.r >= -20){
-
-                if (picDesejado.g - picParecido.g <= 20 && picDesejado.g - picParecido.g >= -20)
+                if (picDesejado.g - picParecido.g <= 30 && picDesejado.g - picParecido.g >= -30)
                 {
                     if (picDesejado.b - picParecido.b <= 20 && picDesejado.b - picParecido.b >= -20)
                     {
                         pic[SAIDA].img[i].r = picParecido.r;
                         pic[SAIDA].img[i].g = picParecido.g;
                         pic[SAIDA].img[i].b = picParecido.b;
+                        
                         break;
                     }
                 }
+            }else if(picDesejado.r - picParecido.r <= 10 && picDesejado.r - picParecido.r >= -10){
 
-            }else if(picDesejado.r - picParecido.r <= 40 && picDesejado.r - picParecido.r >= -40){
-
-                if (picDesejado.g - picParecido.g <= 40 && picDesejado.g - picParecido.g >= -40)
+                if (picDesejado.g - picParecido.g <= 30 && picDesejado.g - picParecido.g >= -30)
                 {
-                    if (picDesejado.b - picParecido.b <= 40 && picDesejado.b - picParecido.b >= -40)
+                    if (picDesejado.b - picParecido.b <= 30 && picDesejado.b - picParecido.b >= -30)
                     {
                         pic[SAIDA].img[i].r = picParecido.r;
                         pic[SAIDA].img[i].g = picParecido.g;
                         pic[SAIDA].img[i].b = picParecido.b;
+                        
+                        break;
+                    }
+                }
+
+            }else if(picDesejado.r - picParecido.r <= 20 && picDesejado.r - picParecido.r >= -20){
+
+                if (picDesejado.g - picParecido.g <= 45 && picDesejado.g - picParecido.g >= -45)
+                {
+                    if (picDesejado.b - picParecido.b <= 35 && picDesejado.b - picParecido.b >= -35)
+                    {
+                        pic[SAIDA].img[i].r = picParecido.r;
+                        pic[SAIDA].img[i].g = picParecido.g;
+                        pic[SAIDA].img[i].b = picParecido.b;
+                        
                         break;
                     }
                 }
 
             }else{
-                pic[SAIDA].img[i].r = 20;
+                pic[SAIDA].img[i].r = 255;
                 pic[SAIDA].img[i].g = 20;
                 pic[SAIDA].img[i].b = 20;  
             }
