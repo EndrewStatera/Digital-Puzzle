@@ -321,6 +321,10 @@ void valida()
     for (int i = 0; i < 8; i++)
         printf("[%02X %02X %02X] ", aux2[i].r, aux2[i].g, aux2[i].b);
     printf("\n");
+    
+    FILE *fp;
+    fp = fopen ("status.txt", "w");
+
     for (int i = 0; i < size; i++)
     {
         if (aux1[i].r != aux2[i].r ||
@@ -331,14 +335,18 @@ void valida()
             printf("*** INVÁLIDO na posição %d ***: %02X %02X %02X -> %02X %02X %02X\n",
                    i, aux1[i].r, aux1[i].g, aux1[i].b, aux2[i].r, aux2[i].g, aux2[i].b);
             ok = 0;
+            fprintf(fp, "*** INVÁLIDO na posição ***");
             break;
         }
     }
     // Libera memória dos arrays ordenados
     free(aux1);
     free(aux2);
-    if (ok)
+    if (ok){
         printf(">>>> TRANSFORMAÇÃO VÁLIDA <<<<<\n");
+        fprintf(fp, ">>>> TRANSFORMAÇÃO VÁLIDA <<<<<");
+    }
+    fclose(fp);
 }
 
 // Funcao de comparacao para qsort: ordena por R, G, B (desempate nessa ordem)
@@ -425,6 +433,7 @@ void inverteImagem(int tam)
         pic[SAIDA].img[i].r = pic[SAIDA].img[tam - 1 - i].r;
         pic[SAIDA].img[i].g = pic[SAIDA].img[tam - 1 - i].g;
         pic[SAIDA].img[i].b = pic[SAIDA].img[tam - 1 - i].b;
+
         pic[SAIDA].img[tam - 1 - i].r = auxR;
         pic[SAIDA].img[tam - 1 - i].g = auxG;
         pic[SAIDA].img[tam - 1 - i].b = auxB;
