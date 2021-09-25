@@ -360,7 +360,7 @@ void mapeamentoRandom(int tam)
             }
             if(trocou)sucessos++;
         }
-    } while (sucessos > 6000);
+    } while (sucessos > 5800);
 }
 
 void inverteImagem(int tam)
