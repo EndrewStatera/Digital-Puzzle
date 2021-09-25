@@ -335,13 +335,14 @@ void mapeamentoRandom(int tam)
         for (int i = 0; i < tam; i++)
         {
             RGB picAtual = pic[DESEJ].img[i];
-            for (int j = 0; j < 35; j++)
+            int trocou = 0;
+            for (int j = 0; j < 50; j++)
             {
                 int indice = genrand64_int64() % tam;
                 
                 RGB picParecido = pic[SAIDA].img[indice]; //
-
-                if (valeTroca(i, i, indice))
+                trocou = valeTroca(i, i, indice);
+                if (trocou)
                 {
                     unsigned int auxR = pic[SAIDA].img[indice].r;
                     unsigned int auxG = pic[SAIDA].img[indice].g;
@@ -355,11 +356,11 @@ void mapeamentoRandom(int tam)
                     pic[SAIDA].img[i].g = auxG;
                     pic[SAIDA].img[i].b = auxB;
 
-                    sucessos++;
                 }
             }
+            if(trocou)sucessos++;
         }
-    } while (sucessos > 2);
+    } while (sucessos > 6000);
 }
 
 void inverteImagem(int tam)
