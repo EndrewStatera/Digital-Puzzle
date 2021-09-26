@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
     gluOrtho2D(0.0, width, height, 0.0);
     glMatrixMode(GL_MODELVIEW);
 
-    srand(time(0)); // Inicializa gerador aleatório (se for usar random)
+    //srand(time(0)); // Inicializa gerador aleatório (se for usar random)
 
     printf("Processando...\n");
 
@@ -165,8 +165,9 @@ int main(int argc, char *argv[])
 
     //mapeamentoFor(tam);
     init_genrand64(time(0));
+
     mapeamentoRandom(tam);
-    mapeamentoRandom(tam);
+
     // NÃO ALTERAR A PARTIR DAQUI!
 
     // Cria textura para a imagem de saída
@@ -280,53 +281,6 @@ int cmp(const void *elem1, const void *elem2)
     return r;
 }
 
-void mapeamentoFor(int tam)
-{
-    for (int i = 0; i < tam; i++)
-    {
-        RGB *pixAtual = &(pic[DESEJ].img[i]);
-        int soma = (pixAtual->b + pixAtual->r + pixAtual->g);
-        RGB *pixMaisParecido = &(pic[SAIDA].img[i]);
-        int somaParecido = (pixMaisParecido->b + pixMaisParecido->g + pixMaisParecido->r);
-        unsigned int diferenca = abs(soma - somaParecido);
-        unsigned int diferencaI = diferenca;
-        //pixMaisParecido->b = 0;
-
-        for (int j = 0; j < tam; j++)
-        {
-            RGB *pixTeste = &(pic[SAIDA].img[j]);
-            int somaTeste = (pixTeste->b + pixTeste->g + pixTeste->r);
-            // pixTeste->b = 0;
-            // pixTeste->r = 0;
-            // pixTeste->g = 0;
-            int sucesso = 0;
-            int diferencaTroca = abs(somaParecido - somaTeste);
-            if (diferenca > abs(somaTeste - soma) && diferencaTroca < diferenca + 15)
-            {
-                pixMaisParecido = pixTeste;
-                diferenca = abs(somaTeste - soma);
-                sucesso++;
-                if (sucesso >= 5)
-                    break;
-            }
-        }
-        if (diferenca < diferencaI)
-        {
-            unsigned char auxR = pixMaisParecido->r;
-            unsigned char auxG = pixMaisParecido->g;
-            unsigned char auxB = pixMaisParecido->b;
-
-            (*pixMaisParecido).r = pic[SAIDA].img[i].r;
-            (*pixMaisParecido).g = pic[SAIDA].img[i].g;
-            (*pixMaisParecido).b = pic[SAIDA].img[i].b;
-
-            pic[SAIDA].img[i].r = auxR;
-            pic[SAIDA].img[i].g = auxG;
-            pic[SAIDA].img[i].b = auxB;
-        }
-    }
-}
-
 void mapeamentoRandom(int tam)
 {
 
@@ -343,7 +297,8 @@ void mapeamentoRandom(int tam)
             
             if (indice >= i)
             {
-                trocou = valeTroca(i, i, indice);
+                trocou = valeTroca(i, tam, indice);
+
             }
 
             if (trocou)
@@ -360,6 +315,7 @@ void mapeamentoRandom(int tam)
                 pic[SAIDA].img[i].g = auxG;
                 pic[SAIDA].img[i].b = auxB;
 
+                
                 break;
             }
         }
@@ -386,45 +342,36 @@ void inverteImagem(int tam)
 
 int valeTroca(int i, int j, int k)
 {
-    RGB *rgb1 = &pic[DESEJ].img[i];
-    RGB *rgb2 = &pic[SAIDA].img[j];
-    RGB *rgb3 = &pic[SAIDA].img[k];
+    RGB *rgb1 = &pic[DESEJ].img[i];//cor desejada
+    RGB *rgb3 = &pic[SAIDA].img[k];//cor que veio
 
     unsigned char desejR = rgb1->r;
     unsigned char desejG = rgb1->g;
     unsigned char desejB = rgb1->b;
 
-    unsigned char redAtual = rgb2->r;
-    unsigned char greenAtual = rgb2->g;
-    unsigned char blueAtual = rgb2->b;
-
     unsigned char redTeste = rgb3->r;
     unsigned char greenTeste = rgb3->g;
     unsigned char blueTeste = rgb3->b;
-
-    RGB atualDiferenca;
-    atualDiferenca.r = abs(redAtual - desejR);
-    atualDiferenca.g = abs(greenAtual - desejG);
-    atualDiferenca.b = abs(blueAtual - desejB);
 
     RGB testeDiferenca;
     testeDiferenca.r = abs(redTeste - desejR);
     testeDiferenca.g = abs(greenTeste - desejG);
     testeDiferenca.b = abs(blueTeste - desejB);
 
-    for (int i = 0; i <= 30; i ++)
+    
+    for (int i = 1; i <= 45; i ++)
     {
         if (testeDiferenca.r < (i))
         {
-            if (testeDiferenca.g < (i+30))
+            if (testeDiferenca.g < (i))
             {
-                if (testeDiferenca.b < (i+50))
+                if (testeDiferenca.b < (i))
                 {
                     return 1;
                 }
             }
         }
-    } 
+    }
 
     return 0;
 }
