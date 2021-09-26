@@ -67,12 +67,12 @@ int valeTroca(int i, int j, int k);
 #define MM 156
 #define MATRIX_A 0xB5026F5AA96619E9ULL
 #define UM 0xFFFFFFFF80000000ULL /* Most significant 33 bits */
-#define LM 0x7FFFFFFFULL /* Least significant 31 bits */
+#define LM 0x7FFFFFFFULL         /* Least significant 31 bits */
 
 /* The array for the state vector */
-static unsigned long long mt[NN]; 
+static unsigned long long mt[NN];
 /* mti==NN+1 means mt[NN] is not initialized */
-static int mti=NN+1; 
+static int mti = NN + 1;
 
 void init_genrand64(unsigned long long seed);
 void init_by_array64(unsigned long long init_key[], unsigned long long key_length);
@@ -165,6 +165,8 @@ int main(int argc, char *argv[])
     //mapeamentoFor(tam);
     init_genrand64(time(0));
     mapeamentoRandom(tam);
+    mapeamentoRandom(tam);
+    
     // NÃO ALTERAR A PARTIR DAQUI!
 
     // Cria textura para a imagem de saída
@@ -327,40 +329,36 @@ void mapeamentoFor(int tam)
 
 void mapeamentoRandom(int tam)
 {
-
-    int sucessos = 0;
-    do
+   
+    for (int i = 0; i < tam; i++)
     {
-        sucessos = 0;
-        for (int i = 0; i < tam; i++)
+        RGB picAtual = pic[DESEJ].img[i];
+        int trocou = 0;
+       
+        for (int j = 0; j < 2000; j++)
         {
-            RGB picAtual = pic[DESEJ].img[i];
-            int trocou = 0;
-            for (int j = 0; j < 50; j++)
+            int indice = genrand64_int64() % tam;
+
+            RGB picParecido = pic[SAIDA].img[indice];
+            trocou = valeTroca(i, i, indice);
+            if (trocou)
             {
-                int indice = genrand64_int64() % tam;
-                
-                RGB picParecido = pic[SAIDA].img[indice]; //
-                trocou = valeTroca(i, i, indice);
-                if (trocou)
-                {
-                    unsigned int auxR = pic[SAIDA].img[indice].r;
-                    unsigned int auxG = pic[SAIDA].img[indice].g;
-                    unsigned int auxB = pic[SAIDA].img[indice].b;
+                unsigned int auxR = pic[SAIDA].img[indice].r;
+                unsigned int auxG = pic[SAIDA].img[indice].g;
+                unsigned int auxB = pic[SAIDA].img[indice].b;
 
-                    pic[SAIDA].img[indice].r = pic[SAIDA].img[i].r;
-                    pic[SAIDA].img[indice].g = pic[SAIDA].img[i].g;
-                    pic[SAIDA].img[indice].b = pic[SAIDA].img[i].b;
+                pic[SAIDA].img[indice].r = pic[SAIDA].img[i].r;
+                pic[SAIDA].img[indice].g = pic[SAIDA].img[i].g;
+                pic[SAIDA].img[indice].b = pic[SAIDA].img[i].b;
 
-                    pic[SAIDA].img[i].r = auxR;
-                    pic[SAIDA].img[i].g = auxG;
-                    pic[SAIDA].img[i].b = auxB;
+                pic[SAIDA].img[i].r = auxR;
+                pic[SAIDA].img[i].g = auxG;
+                pic[SAIDA].img[i].b = auxB;
 
-                }
+                break;
             }
-            if(trocou)sucessos++;
         }
-    } while (sucessos > 5800);
+    }
 }
 
 void inverteImagem(int tam)
@@ -413,14 +411,14 @@ int valeTroca(int i, int j, int k)
     {
         if (testeDiferenca.b < atualDiferenca.b)
         {
-            if (testeDiferenca.g < 50)
+            if (testeDiferenca.g < 60)
             {
                 return 1;
             }
         }
         else
         {
-            if (testeDiferenca.g < atualDiferenca.g && (testeDiferenca.b < 50 || atualDiferenca.b > 100))
+            if (testeDiferenca.g < atualDiferenca.g && (testeDiferenca.b < 60 || atualDiferenca.b > 120))
             {
                 return 1;
             }
@@ -428,7 +426,7 @@ int valeTroca(int i, int j, int k)
     }
     else
     {
-        if (testeDiferenca.r < 50 || atualDiferenca.r > 100)
+        if (testeDiferenca.r < 60 || atualDiferenca.r > 120)
         {
             if (testeDiferenca.b < atualDiferenca.b)
             {
@@ -504,13 +502,12 @@ void draw()
     glutSwapBuffers();
 }
 
-
 /* initializes mt[NN] with a seed */
 void init_genrand64(unsigned long long seed)
 {
     mt[0] = seed;
-    for (mti=1; mti<NN; mti++) 
-        mt[mti] =  (6364136223846793005ULL * (mt[mti-1] ^ (mt[mti-1] >> 62)) + mti);
+    for (mti = 1; mti < NN; mti++)
+        mt[mti] = (6364136223846793005ULL * (mt[mti - 1] ^ (mt[mti - 1] >> 62)) + mti);
 }
 
 /* initialize by an array with array-length */
@@ -520,23 +517,34 @@ void init_by_array64(unsigned long long init_key[], unsigned long long key_lengt
 {
     unsigned long long i, j, k;
     init_genrand64(19650218ULL);
-    i=1; j=0;
-    k = (NN>key_length ? NN : key_length);
-    for (; k; k--) {
-        mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 62)) * 3935559000370003845ULL))
-          + init_key[j] + j; /* non linear */
-        i++; j++;
-        if (i>=NN) { mt[0] = mt[NN-1]; i=1; }
-        if (j>=key_length) j=0;
-    }
-    for (k=NN-1; k; k--) {
-        mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 62)) * 2862933555777941757ULL))
-          - i; /* non linear */
+    i = 1;
+    j = 0;
+    k = (NN > key_length ? NN : key_length);
+    for (; k; k--)
+    {
+        mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 62)) * 3935559000370003845ULL)) + init_key[j] + j; /* non linear */
         i++;
-        if (i>=NN) { mt[0] = mt[NN-1]; i=1; }
+        j++;
+        if (i >= NN)
+        {
+            mt[0] = mt[NN - 1];
+            i = 1;
+        }
+        if (j >= key_length)
+            j = 0;
+    }
+    for (k = NN - 1; k; k--)
+    {
+        mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 62)) * 2862933555777941757ULL)) - i; /* non linear */
+        i++;
+        if (i >= NN)
+        {
+            mt[0] = mt[NN - 1];
+            i = 1;
+        }
     }
 
-    mt[0] = 1ULL << 63; /* MSB is 1; assuring non-zero initial array */ 
+    mt[0] = 1ULL << 63; /* MSB is 1; assuring non-zero initial array */
 }
 
 /* generates a random number on [0, 2^64-1]-interval */
@@ -544,29 +552,32 @@ unsigned long long genrand64_int64(void)
 {
     int i;
     unsigned long long x;
-    static unsigned long long mag01[2]={0ULL, MATRIX_A};
+    static unsigned long long mag01[2] = {0ULL, MATRIX_A};
 
-    if (mti >= NN) { /* generate NN words at one time */
+    if (mti >= NN)
+    { /* generate NN words at one time */
 
         /* if init_genrand64() has not been called, */
         /* a default initial seed is used     */
-        if (mti == NN+1) 
-            init_genrand64(5489ULL); 
+        if (mti == NN + 1)
+            init_genrand64(5489ULL);
 
-        for (i=0;i<NN-MM;i++) {
-            x = (mt[i]&UM)|(mt[i+1]&LM);
-            mt[i] = mt[i+MM] ^ (x>>1) ^ mag01[(int)(x&1ULL)];
+        for (i = 0; i < NN - MM; i++)
+        {
+            x = (mt[i] & UM) | (mt[i + 1] & LM);
+            mt[i] = mt[i + MM] ^ (x >> 1) ^ mag01[(int)(x & 1ULL)];
         }
-        for (;i<NN-1;i++) {
-            x = (mt[i]&UM)|(mt[i+1]&LM);
-            mt[i] = mt[i+(MM-NN)] ^ (x>>1) ^ mag01[(int)(x&1ULL)];
+        for (; i < NN - 1; i++)
+        {
+            x = (mt[i] & UM) | (mt[i + 1] & LM);
+            mt[i] = mt[i + (MM - NN)] ^ (x >> 1) ^ mag01[(int)(x & 1ULL)];
         }
-        x = (mt[NN-1]&UM)|(mt[0]&LM);
-        mt[NN-1] = mt[MM-1] ^ (x>>1) ^ mag01[(int)(x&1ULL)];
+        x = (mt[NN - 1] & UM) | (mt[0] & LM);
+        mt[NN - 1] = mt[MM - 1] ^ (x >> 1) ^ mag01[(int)(x & 1ULL)];
 
         mti = 0;
     }
-  
+
     x = mt[mti++];
 
     x ^= (x >> 29) & 0x5555555555555555ULL;
