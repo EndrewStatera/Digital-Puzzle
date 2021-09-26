@@ -226,8 +226,6 @@ void valida()
         printf("[%02X %02X %02X] ", aux2[i].r, aux2[i].g, aux2[i].b);
     printf("\n");
 
-    FILE *fp;
-    fp = fopen("status.txt", "w");
 
     for (int i = 0; i < size; i++)
     {
@@ -239,7 +237,6 @@ void valida()
             printf("*** INVÁLIDO na posição %d ***: %02X %02X %02X -> %02X %02X %02X\n",
                    i, aux1[i].r, aux1[i].g, aux1[i].b, aux2[i].r, aux2[i].g, aux2[i].b);
             ok = 0;
-            fprintf(fp, "*** INVÁLIDO na posição ***");
             break;
         }
     }
@@ -249,9 +246,7 @@ void valida()
     if (ok)
     {
         printf(">>>> TRANSFORMAÇÃO VÁLIDA <<<<<\n");
-        fprintf(fp, ">>>> TRANSFORMAÇÃO VÁLIDA <<<<<");
     }
-    fclose(fp);
 }
 
 // Funcao de comparacao para qsort: ordena por R, G, B (desempate nessa ordem)
@@ -286,23 +281,21 @@ void mapeamentoRandom(int tam)
 
     for (int i = 0; i < tam; i++)
     {
-        RGB picAtual = pic[DESEJ].img[i];
         int trocou = 0;
-        int indice = 0;
 
-        for (int j = 0; j < 2000; j++)
+        for (int j = 0; j < 2000; j++) //para achar a troca mais favoravel
         {
-            indice = genrand64_int64() % tam;
-            RGB picParecido = pic[SAIDA].img[indice];
-            
-            if (indice >= i)
-            {
-                trocou = valeTroca(i, tam, indice);
+            int indice = genrand64_int64() % tam;
 
+            if (indice > i)
+            {
+                trocou = valeTroca(i, i, indice);
             }
 
             if (trocou)
             {
+                RGB picParecido = pic[SAIDA].img[indice];
+
                 unsigned int auxR = pic[SAIDA].img[indice].r;
                 unsigned int auxG = pic[SAIDA].img[indice].g;
                 unsigned int auxB = pic[SAIDA].img[indice].b;
@@ -315,7 +308,6 @@ void mapeamentoRandom(int tam)
                 pic[SAIDA].img[i].g = auxG;
                 pic[SAIDA].img[i].b = auxB;
 
-                
                 break;
             }
         }
@@ -342,32 +334,51 @@ void inverteImagem(int tam)
 
 int valeTroca(int i, int j, int k)
 {
-    RGB *rgb1 = &pic[DESEJ].img[i];//cor desejada
-    RGB *rgb3 = &pic[SAIDA].img[k];//cor que veio
+    RGB *rgb1 = &pic[DESEJ].img[i]; //cor desejada
+    RGB *rgb2 = &pic[SAIDA].img[j]; //cor atual
+    RGB *rgb3 = &pic[SAIDA].img[k]; //cor que veio do sorteio
 
     unsigned char desejR = rgb1->r;
     unsigned char desejG = rgb1->g;
     unsigned char desejB = rgb1->b;
 
+    unsigned char redAtual = rgb2->r;
+    unsigned char greenAtual = rgb2->g;
+    unsigned char blueAtual = rgb2->b;
+
     unsigned char redTeste = rgb3->r;
     unsigned char greenTeste = rgb3->g;
     unsigned char blueTeste = rgb3->b;
+
+    RGB atualDiferenca;
+    atualDiferenca.r = abs(redAtual - desejR);
+    atualDiferenca.g = abs(greenAtual - desejG);
+    atualDiferenca.b = abs(blueAtual - desejB);
 
     RGB testeDiferenca;
     testeDiferenca.r = abs(redTeste - desejR);
     testeDiferenca.g = abs(greenTeste - desejG);
     testeDiferenca.b = abs(blueTeste - desejB);
 
-    
-    for (int i = 1; i <= 45; i ++)
+    if (testeDiferenca.r < atualDiferenca.r)
     {
-        if (testeDiferenca.r < (i))
+        if (testeDiferenca.b < atualDiferenca.b)
         {
-            if (testeDiferenca.g < (i))
+            if (testeDiferenca.g < atualDiferenca.g)
             {
-                if (testeDiferenca.b < (i))
+
+                for (int i = 1; i <= 50; i++)
                 {
-                    return 1;
+                    if (testeDiferenca.r < i)
+                    {
+                        if (testeDiferenca.g < i)
+                        {
+                            if (testeDiferenca.b < i)
+                            {
+                                return 1;
+                            }
+                        }
+                    }
                 }
             }
         }
