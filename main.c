@@ -56,6 +56,7 @@ int sel;
 void mapeamentoFor(int tam);
 void mapeamentoRandom(int tam);
 void inverteImagem(int tam);
+int procura(int tamx, RGB valor);
 int valeTroca(int i, int j, int k);
 // Enums para facilitar o acesso às imagens
 #define ORIGEM 0
@@ -166,7 +167,6 @@ int main(int argc, char *argv[])
     init_genrand64(time(0));
     mapeamentoRandom(tam);
     mapeamentoRandom(tam);
-    
     // NÃO ALTERAR A PARTIR DAQUI!
 
     // Cria textura para a imagem de saída
@@ -329,18 +329,23 @@ void mapeamentoFor(int tam)
 
 void mapeamentoRandom(int tam)
 {
-   
+
     for (int i = 0; i < tam; i++)
     {
         RGB picAtual = pic[DESEJ].img[i];
         int trocou = 0;
-       
+        int indice = 0;
+
         for (int j = 0; j < 2000; j++)
         {
-            int indice = genrand64_int64() % tam;
-
+            indice = genrand64_int64() % tam;
             RGB picParecido = pic[SAIDA].img[indice];
-            trocou = valeTroca(i, i, indice);
+            
+            if (indice >= i)
+            {
+                trocou = valeTroca(i, i, indice);
+            }
+
             if (trocou)
             {
                 unsigned int auxR = pic[SAIDA].img[indice].r;
@@ -407,30 +412,13 @@ int valeTroca(int i, int j, int k)
     testeDiferenca.g = abs(greenTeste - desejG);
     testeDiferenca.b = abs(blueTeste - desejB);
 
-    if (testeDiferenca.r < atualDiferenca.r)
+    for (int i = 0; i <= 30; i ++)
     {
-        if (testeDiferenca.b < atualDiferenca.b)
+        if (testeDiferenca.r < (i))
         {
-            if (testeDiferenca.g < 60)
+            if (testeDiferenca.g < (i+30))
             {
-                return 1;
-            }
-        }
-        else
-        {
-            if (testeDiferenca.g < atualDiferenca.g && (testeDiferenca.b < 60 || atualDiferenca.b > 120))
-            {
-                return 1;
-            }
-        }
-    }
-    else
-    {
-        if (testeDiferenca.r < 60 || atualDiferenca.r > 120)
-        {
-            if (testeDiferenca.b < atualDiferenca.b)
-            {
-                if (testeDiferenca.g < atualDiferenca.g)
+                if (testeDiferenca.b < (i+50))
                 {
                     return 1;
                 }
@@ -587,28 +575,3 @@ unsigned long long genrand64_int64(void)
 
     return x;
 }
-
-/* generates a random number on [0, 2^63-1]-interval 
-long long genrand64_int63(void)
-{
-    return (long long)(genrand64_int64() >> 1);
-}
-
-/* generates a random number on [0,1]-real-interval 
-double genrand64_real1(void)
-{
-    return (genrand64_int64() >> 11) * (1.0/9007199254740991.0);
-}
-
-/* generates a random number on [0,1)-real-interval 
-double genrand64_real2(void)
-{
-    return (genrand64_int64() >> 11) * (1.0/9007199254740992.0);
-}
-
-/* generates a random number on (0,1)-real-interval 
-double genrand64_real3(void)
-{
-    return ((genrand64_int64() >> 12) + 0.5) * (1.0/4503599627370496.0);
-}
-*/
