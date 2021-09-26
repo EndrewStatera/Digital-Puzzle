@@ -165,8 +165,10 @@ int main(int argc, char *argv[])
 
     //mapeamentoFor(tam);
     init_genrand64(time(0));
-
-    mapeamentoRandom(tam);
+    for (int i = 0; i < 10; i++)
+    {
+        mapeamentoRandom(tam);
+    }
 
     // NÃO ALTERAR A PARTIR DAQUI!
 
@@ -225,7 +227,6 @@ void valida()
     for (int i = 0; i < 8; i++)
         printf("[%02X %02X %02X] ", aux2[i].r, aux2[i].g, aux2[i].b);
     printf("\n");
-
 
     for (int i = 0; i < size; i++)
     {
@@ -287,7 +288,7 @@ void mapeamentoRandom(int tam)
         {
             int indice = genrand64_int64() % tam;
 
-            if (indice > i)
+            if (indice >= i)
             {
                 trocou = valeTroca(i, i, indice);
             }
@@ -360,29 +361,33 @@ int valeTroca(int i, int j, int k)
     testeDiferenca.g = abs(greenTeste - desejG);
     testeDiferenca.b = abs(blueTeste - desejB);
 
-    if (testeDiferenca.r < atualDiferenca.r)
+    if (testeDiferenca.r < atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b <= atualDiferenca.b)
     {
-        if (testeDiferenca.b < atualDiferenca.b)
-        {
-            if (testeDiferenca.g < atualDiferenca.g)
-            {
+        return 1;
+    }
+    else if (testeDiferenca.r <= atualDiferenca.r && testeDiferenca.g < atualDiferenca.g && testeDiferenca.b <= atualDiferenca.b)
+    {
+        return 1;
+    }
+    else if (testeDiferenca.r <= atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b < atualDiferenca.b)
+    {
+        return 1;
+    }
 
-                for (int i = 1; i <= 50; i++)
+    /*
+    for (int i = 1; i <= 2; i++)
+    {
+        if (testeDiferenca.r <= atualDiferenca.r )
+        {
+            if (testeDiferenca.g <= atualDiferenca.r )
+            {
+                if (testeDiferenca.b <= atualDiferenca.b)
                 {
-                    if (testeDiferenca.r < i)
-                    {
-                        if (testeDiferenca.g < i)
-                        {
-                            if (testeDiferenca.b < i)
-                            {
-                                return 1;
-                            }
-                        }
-                    }
+                    return 1;
                 }
             }
         }
-    }
+    }*/
 
     return 0;
 }
