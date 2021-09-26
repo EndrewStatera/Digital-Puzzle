@@ -424,7 +424,7 @@ int valeTroca(int i, int j, int k)
                 }
             }
         }
-    }
+    } 
 
     return 0;
 }
