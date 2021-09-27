@@ -348,7 +348,7 @@ void mapeamentoRandom(int tam)
                 if (indice > i){
                     valeuTroca = valeTrocaCauteloso(i, pixMaisParecido, indice);
                 }
-                else if(i > tam * 0.7){
+                else{ //if(i > tam * 0.7){
                      valeuTroca = valeTrocaCauteloso(i, pixMaisParecido, indice);
                 }
 
@@ -375,7 +375,7 @@ void mapeamentoRandom(int tam)
                 contador++;
             }
         }
-    } while (contador > 250000);
+    } while (contador > 200000);
 }
 
 void inverteImagem(int tam)
