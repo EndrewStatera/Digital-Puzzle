@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
     init_genrand64(time(0));
     mapeamentoRandom(tam);
     mapeamentoRandom(tam);
-    
+
     // NÃO ALTERAR A PARTIR DAQUI!
 
     // Cria textura para a imagem de saída
@@ -329,36 +329,40 @@ void mapeamentoFor(int tam)
 
 void mapeamentoRandom(int tam)
 {
-   
-    for (int i = 0; i < tam; i++)
+    int contador = 0;
+    do
     {
-        RGB picAtual = pic[DESEJ].img[i];
-        int trocou = 0;
-       
-        for (int j = 0; j < 2000; j++)
+        contador = 0;
+        for (int i = 0; i < tam; i++)
         {
-            int indice = genrand64_int64() % tam;
-
-            RGB picParecido = pic[SAIDA].img[indice];
-            trocou = valeTroca(i, i, indice);
-            if (trocou)
+            RGB picAtual = pic[DESEJ].img[i];
+            char trocou = 0;
+            
+            for (int j = 0; j < 40; j++)
             {
-                unsigned int auxR = pic[SAIDA].img[indice].r;
-                unsigned int auxG = pic[SAIDA].img[indice].g;
-                unsigned int auxB = pic[SAIDA].img[indice].b;
+                int indice = genrand64_int64() % tam;
 
-                pic[SAIDA].img[indice].r = pic[SAIDA].img[i].r;
-                pic[SAIDA].img[indice].g = pic[SAIDA].img[i].g;
-                pic[SAIDA].img[indice].b = pic[SAIDA].img[i].b;
+                RGB picParecido = pic[SAIDA].img[indice];
+                int valeuTroca = valeTroca(i, i, indice);
+                if (valeuTroca)
+                {
+                    unsigned int auxR = pic[SAIDA].img[indice].r;
+                    unsigned int auxG = pic[SAIDA].img[indice].g;
+                    unsigned int auxB = pic[SAIDA].img[indice].b;
 
-                pic[SAIDA].img[i].r = auxR;
-                pic[SAIDA].img[i].g = auxG;
-                pic[SAIDA].img[i].b = auxB;
+                    pic[SAIDA].img[indice].r = pic[SAIDA].img[i].r;
+                    pic[SAIDA].img[indice].g = pic[SAIDA].img[i].g;
+                    pic[SAIDA].img[indice].b = pic[SAIDA].img[i].b;
 
-                break;
+                    pic[SAIDA].img[i].r = auxR;
+                    pic[SAIDA].img[i].g = auxG;
+                    pic[SAIDA].img[i].b = auxB;
+                    trocou = 1;
+                }
             }
+            if(trocou)contador++;
         }
-    }
+    } while (contador > 400000);
 }
 
 void inverteImagem(int tam)
@@ -379,11 +383,11 @@ void inverteImagem(int tam)
     }
 }
 
-int valeTroca(int i, int j, int k)
+int valeTroca(int desej, int atual, int teste)
 {
-    RGB *rgb1 = &pic[DESEJ].img[i];
-    RGB *rgb2 = &pic[SAIDA].img[j];
-    RGB *rgb3 = &pic[SAIDA].img[k];
+    RGB *rgb1 = &pic[DESEJ].img[desej];
+    RGB *rgb2 = &pic[SAIDA].img[atual];
+    RGB *rgb3 = &pic[SAIDA].img[teste];
 
     unsigned char desejR = rgb1->r;
     unsigned char desejG = rgb1->g;
@@ -401,42 +405,55 @@ int valeTroca(int i, int j, int k)
     atualDiferenca.r = abs(redAtual - desejR);
     atualDiferenca.g = abs(greenAtual - desejG);
     atualDiferenca.b = abs(blueAtual - desejB);
+    double atDif;
+    if((desejR - atualDiferenca.r)/2 < 128)
+    atDif = sqrt(2 * pow(atualDiferenca.r, 2) + 4 * pow(atualDiferenca.g, 2) + pow(atualDiferenca.b, 2));
+    else
+    atDif = sqrt(3 * pow(atualDiferenca.r, 2) + 4 * pow(atualDiferenca.g, 2) + 2*pow(atualDiferenca.b, 2));
 
     RGB testeDiferenca;
     testeDiferenca.r = abs(redTeste - desejR);
     testeDiferenca.g = abs(greenTeste - desejG);
     testeDiferenca.b = abs(blueTeste - desejB);
-
-    if (testeDiferenca.r < atualDiferenca.r)
-    {
-        if (testeDiferenca.b < atualDiferenca.b)
-        {
-            if (testeDiferenca.g < 60)
-            {
-                return 1;
-            }
-        }
-        else
-        {
-            if (testeDiferenca.g < atualDiferenca.g && (testeDiferenca.b < 60 || atualDiferenca.b > 120))
-            {
-                return 1;
-            }
-        }
-    }
+    int tesDif;
+    if ((desejR - testeDiferenca.r)/2 < 128)
+    tesDif = sqrt(2 * pow(testeDiferenca.r, 2) + 4 * pow(testeDiferenca.g, 2) + pow(testeDiferenca.b, 2));
     else
-    {
-        if (testeDiferenca.r < 60 || atualDiferenca.r > 120)
-        {
-            if (testeDiferenca.b < atualDiferenca.b)
-            {
-                if (testeDiferenca.g < atualDiferenca.g)
-                {
-                    return 1;
-                }
-            }
-        }
-    }
+    tesDif = sqrt(3 * pow(testeDiferenca.r, 2) + 4 * pow(testeDiferenca.g, 2) + 2* pow(testeDiferenca.b, 2));
+
+    if (tesDif < atDif)
+        return 1;
+
+    // if (testeDiferenca.r < atualDiferenca.r)
+    // {
+    //     if (testeDiferenca.b < atualDiferenca.b)
+    //     {
+    //         if (testeDiferenca.g < 60)
+    //         {
+    //             return 1;
+    //         }
+    //     }
+    //     else
+    //     {
+    //         if (testeDiferenca.g < atualDiferenca.g && (testeDiferenca.b < 60 || atualDiferenca.b > 120))
+    //         {
+    //             return 1;
+    //         }
+    //     }
+    // }
+    // else
+    // {
+    //     if (testeDiferenca.r < 60 || atualDiferenca.r > 120)
+    //     {
+    //         if (testeDiferenca.b < atualDiferenca.b)
+    //         {
+    //             if (testeDiferenca.g < atualDiferenca.g)
+    //             {
+    //                 return 1;
+    //             }
+    //         }
+    //     }
+    // }
 
     return 0;
 }
