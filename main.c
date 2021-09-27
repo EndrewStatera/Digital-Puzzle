@@ -339,23 +339,24 @@ void mapeamentoRandom(int tam)
             int pixMaisParecido = i;
             char trocou = 0;
 
-            for (int j = 0; j < 40; j++)
+            for (int j = 0; j < 50; j++)
             {
                 int indice = genrand64_int64() % tam;
 
                 RGB picParecido = pic[SAIDA].img[indice];
                 int valeuTroca = 0;
-                if (indice > i)
-                    valeuTroca = valeTroca(i, pixMaisParecido, indice);
-                else
-                {
+                if (indice > i){
                     valeuTroca = valeTrocaCauteloso(i, pixMaisParecido, indice);
+                }
+                else if(i > tam * 0.7){
+                     valeuTroca = valeTrocaCauteloso(i, pixMaisParecido, indice);
                 }
 
                 if (valeuTroca)
                 {
                     pixMaisParecido = indice;
                     trocou = 1;
+                    //break;
                 }
             }
             if (trocou)
@@ -473,6 +474,7 @@ int valeTroca(int desej, int atual, int teste)
 int valeTrocaCauteloso(int desej, int atual, int teste)
 {
     RGB *rgb1 = &pic[DESEJ].img[desej];
+    RGB* rgba = &pic[DESEJ].img[teste];
     RGB *rgb2 = &pic[SAIDA].img[atual];
     RGB *rgb3 = &pic[SAIDA].img[teste];
 
@@ -492,41 +494,66 @@ int valeTrocaCauteloso(int desej, int atual, int teste)
     atualDiferenca.r = abs(redAtual - desejR);
     atualDiferenca.g = abs(greenAtual - desejG);
     atualDiferenca.b = abs(blueAtual - desejB);
+    double atDif;
+    if ((desejR - atualDiferenca.r) / 2 < 128)
+        atDif = sqrt(2 * pow(atualDiferenca.r, 2) + 4 * pow(atualDiferenca.g, 2) + pow(atualDiferenca.b, 2));
+    else
+        atDif = sqrt(3 * pow(atualDiferenca.r, 2) + 4 * pow(atualDiferenca.g, 2) + 2 * pow(atualDiferenca.b, 2));
+
     RGB testeDiferenca;
     testeDiferenca.r = abs(redTeste - desejR);
     testeDiferenca.g = abs(greenTeste - desejG);
     testeDiferenca.b = abs(blueTeste - desejB);
-
-    if (testeDiferenca.r < atualDiferenca.r)
-    {
-        if (testeDiferenca.b < atualDiferenca.b)
-        {
-            if (testeDiferenca.g < 60)
-            {
-                return 1;
-            }
-        }
-        else
-        {
-            if (testeDiferenca.g < atualDiferenca.g && (testeDiferenca.b < 60 || atualDiferenca.b > 120))
-            {
-                return 1;
-            }
-        }
-    }
+    int tesDif;
+    if ((desejR - testeDiferenca.r) / 2 < 128)
+        tesDif = sqrt(2 * pow(testeDiferenca.r, 2) + 4 * pow(testeDiferenca.g, 2) + pow(testeDiferenca.b, 2));
     else
-    {
-        if (testeDiferenca.r < 60 || atualDiferenca.r > 120)
-        {
-            if (testeDiferenca.b < atualDiferenca.b)
-            {
-                if (testeDiferenca.g < atualDiferenca.g)
-                {
-                    return 1;
-                }
-            }
-        }
-    }
+        tesDif = sqrt(3 * pow(testeDiferenca.r, 2) + 4 * pow(testeDiferenca.g, 2) + 2 * pow(testeDiferenca.b, 2));
+
+    RGB desejTesteDif;
+    desejTesteDif.r = abs(redAtual - rgba->r);
+    desejTesteDif.g = abs(greenAtual - rgba->g);
+    desejTesteDif.b = abs(blueAtual - rgba->b);
+    int testeAtualDif;
+    if ((desejR - testeDiferenca.r) / 2 < 128)
+        testeAtualDif = sqrt(2 * pow(desejTesteDif.r, 2) + 4 * pow(desejTesteDif.g, 2) + pow(desejTesteDif.b, 2));
+    else
+        testeAtualDif = sqrt(3 * pow(desejTesteDif.r, 2) + 4 * pow(desejTesteDif.g, 2) + 2 * pow(desejTesteDif.b, 2));
+    
+    if (tesDif < atDif && testeAtualDif < tesDif)
+        return 1;
+
+
+    // if (testeDiferenca.r < atualDiferenca.r)
+    // {
+    //     if (testeDiferenca.b < atualDiferenca.b)
+    //     {
+    //         if (testeDiferenca.g < 60)
+    //         {
+    //             return 1;
+    //         }
+    //     }
+    //     else
+    //     {
+    //         if (testeDiferenca.g < atualDiferenca.g && (testeDiferenca.b < 60 || atualDiferenca.b > 120))
+    //         {
+    //             return 1;
+    //         }
+    //     }
+    // }
+    // else
+    // {
+    //     if (testeDiferenca.r < 60 || atualDiferenca.r > 120)
+    //     {
+    //         if (testeDiferenca.b < atualDiferenca.b)
+    //         {
+    //             if (testeDiferenca.g < atualDiferenca.g)
+    //             {
+    //                 return 1;
+    //             }
+    //         }
+    //     }
+    // }
 
     return 0;
 }
