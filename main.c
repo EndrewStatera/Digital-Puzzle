@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
     //
     // Aplica o algoritmo e gera a saida em pic[SAIDA].img...
     //mapeamentoFor(tam);
-    contador = 10;
+    contador = 5;
     init_genrand64(time(0));
 
     mapeamentoRandom(tam);
@@ -283,7 +283,7 @@ void mapeamentoRandom(int tam)
     {
         int trocou = 0;
 
-        for (int j = 0; j < 2500; j++) //para achar a troca mais favoravel
+        for (int j = 0; j < 3000; j++) //para achar a troca mais favoravel
         {
             int indice = genrand64_int64() % tam;
 
@@ -366,7 +366,8 @@ int valeTroca(int i, int j, int k)
     testeDiferenca.g = abs(greenTeste - desejG);
     testeDiferenca.b = abs(blueTeste - desejB);
 
-    if (testeDiferenca.r < atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b <= atualDiferenca.b)
+   
+    if (testeDiferenca.r < atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b <= atualDiferenca.b )
     {
         return 1;
     }
@@ -378,34 +379,32 @@ int valeTroca(int i, int j, int k)
     {
         return 1;
     }  // tentando arrumar com mais comparações mais pouca diferença
-    else if (testeDiferenca.r > atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b <= atualDiferenca.b && (testeDiferenca.r - atualDiferenca.r) < 5)
+    else if (testeDiferenca.r > atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b <= atualDiferenca.b && abs(testeDiferenca.r - atualDiferenca.r) <= 10)
     {
         return 1;
     }
-    else if (testeDiferenca.r <= atualDiferenca.r && testeDiferenca.g > atualDiferenca.g && testeDiferenca.b <= atualDiferenca.b && (testeDiferenca.g - atualDiferenca.g) < 255)
+    else if (testeDiferenca.r <= atualDiferenca.r && testeDiferenca.g > atualDiferenca.g && testeDiferenca.b <= atualDiferenca.b && abs(testeDiferenca.g - atualDiferenca.g) <= 255)
     {
         return 1;
     }
-    else if (testeDiferenca.r <= atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b > atualDiferenca.b && (testeDiferenca.b - atualDiferenca.b) < 5)
+    else if (testeDiferenca.r <= atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b > atualDiferenca.b && abs(testeDiferenca.b - atualDiferenca.b) <= 15)
     {
         return 1;
     }
 
-    /*
-    for (int i = 1; i <= 2; i++)
+   
+/*
+    if (testeDiferenca.r < atualDiferenca.r && testeDiferenca.r <= aux)
     {
-        if (testeDiferenca.r <= atualDiferenca.r )
+        if (testeDiferenca.g < atualDiferenca.g && testeDiferenca.g <= aux)
         {
-            if (testeDiferenca.g <= atualDiferenca.r )
+            if (testeDiferenca.b < atualDiferenca.b && testeDiferenca.b <= aux)
             {
-                if (testeDiferenca.b <= atualDiferenca.b)
-                {
-                    return 1;
-                }
+                return 1;
             }
         }
-    }*/
-
+    }
+*/
     return 0;
 }
 
