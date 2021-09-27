@@ -51,13 +51,15 @@ Img pic[3];
 
 // Imagem selecionada (0,1,2)
 int sel;
+
 //meus metodos
 
 void mapeamentoFor(int tam);
 void mapeamentoRandom(int tam);
 void inverteImagem(int tam);
-int procura(int tamx, RGB valor);
 int valeTroca(int i, int j, int k);
+int contador;
+
 // Enums para facilitar o acesso às imagens
 #define ORIGEM 0
 #define DESEJ 1
@@ -152,8 +154,12 @@ int main(int argc, char *argv[])
     // (ou chamar funcoes para fazer isso)
     //
     // Aplica o algoritmo e gera a saida em pic[SAIDA].img...
-    // ...
-    // ...
+    //mapeamentoFor(tam);
+    contador = 10;
+    init_genrand64(time(0));
+
+    mapeamentoRandom(tam);
+
     //
     // Exemplo de manipulação: inverte as cores na imagem de saída
 
@@ -162,13 +168,6 @@ int main(int argc, char *argv[])
     //     pic[SAIDA].img[i].g = 255 - pic[SAIDA].img[i].g;
     //     pic[SAIDA].img[i].b = 255 - pic[SAIDA].img[i].b;
     // }
-
-    //mapeamentoFor(tam);
-    init_genrand64(time(0));
-    for (int i = 0; i < 10; i++)
-    {
-        mapeamentoRandom(tam);
-    }
 
     // NÃO ALTERAR A PARTIR DAQUI!
 
@@ -284,7 +283,7 @@ void mapeamentoRandom(int tam)
     {
         int trocou = 0;
 
-        for (int j = 0; j < 2000; j++) //para achar a troca mais favoravel
+        for (int j = 0; j < 2500; j++) //para achar a troca mais favoravel
         {
             int indice = genrand64_int64() % tam;
 
@@ -295,7 +294,7 @@ void mapeamentoRandom(int tam)
 
             if (trocou)
             {
-                RGB picParecido = pic[SAIDA].img[indice];
+                //RGB picParecido = pic[SAIDA].img[indice];
 
                 unsigned int auxR = pic[SAIDA].img[indice].r;
                 unsigned int auxG = pic[SAIDA].img[indice].g;
@@ -312,6 +311,12 @@ void mapeamentoRandom(int tam)
                 break;
             }
         }
+    }
+
+    // tentando fazer algo recursivo
+    if (--contador)
+    {
+        mapeamentoRandom(tam);
     }
 }
 
@@ -370,6 +375,18 @@ int valeTroca(int i, int j, int k)
         return 1;
     }
     else if (testeDiferenca.r <= atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b < atualDiferenca.b)
+    {
+        return 1;
+    }  // tentando arrumar com mais comparações mais pouca diferença
+    else if (testeDiferenca.r > atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b <= atualDiferenca.b && (testeDiferenca.r - atualDiferenca.r) < 5)
+    {
+        return 1;
+    }
+    else if (testeDiferenca.r <= atualDiferenca.r && testeDiferenca.g > atualDiferenca.g && testeDiferenca.b <= atualDiferenca.b && (testeDiferenca.g - atualDiferenca.g) < 255)
+    {
+        return 1;
+    }
+    else if (testeDiferenca.r <= atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b > atualDiferenca.b && (testeDiferenca.b - atualDiferenca.b) < 5)
     {
         return 1;
     }
