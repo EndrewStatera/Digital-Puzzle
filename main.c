@@ -375,7 +375,7 @@ void mapeamentoRandom(int tam)
                 contador++;
             }
         }
-    } while (contador > 125000);
+    } while (contador > 20000);
 }
 
 void inverteImagem(int tam)
