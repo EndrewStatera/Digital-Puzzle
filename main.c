@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h> // Para usar strings
 #include <time.h>
-
+#include <math.h>
 #ifdef WIN32
 #include <windows.h> // includes only in MSWindows not in UNIX
 #include "gl/glut.h"
@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
     //mapeamentoFor(tam);
     init_genrand64(time(0));
     mapeamentoRandom(tam);
-    mapeamentoRandom(tam);
+    //mapeamentoFor(tam);
 
     // NÃO ALTERAR A PARTIR DAQUI!
 
@@ -288,30 +288,19 @@ void mapeamentoFor(int tam)
         RGB *pixAtual = &(pic[DESEJ].img[i]);
         int soma = (pixAtual->b + pixAtual->r + pixAtual->g);
         RGB *pixMaisParecido = &(pic[SAIDA].img[i]);
-        int somaParecido = (pixMaisParecido->b + pixMaisParecido->g + pixMaisParecido->r);
-        unsigned int diferenca = abs(soma - somaParecido);
-        unsigned int diferencaI = diferenca;
-        //pixMaisParecido->b = 0;
+        int indiceMaisParecido = i;
 
-        for (int j = 0; j < tam; j++)
+        for (int j = i; j < tam; j++)
         {
             RGB *pixTeste = &(pic[SAIDA].img[j]);
-            int somaTeste = (pixTeste->b + pixTeste->g + pixTeste->r);
-            // pixTeste->b = 0;
-            // pixTeste->r = 0;
-            // pixTeste->g = 0;
-            int sucesso = 0;
-            int diferencaTroca = abs(somaParecido - somaTeste);
-            if (diferenca > abs(somaTeste - soma) && diferencaTroca < diferenca + 15)
+            int sucesso = valeTrocaCauteloso(i, indiceMaisParecido, j);
+ 
+            if (sucesso)
             {
-                pixMaisParecido = pixTeste;
-                diferenca = abs(somaTeste - soma);
-                sucesso++;
-                if (sucesso >= 5)
-                    break;
+                indiceMaisParecido = j;
             }
         }
-        if (diferenca < diferencaI)
+        if (indiceMaisParecido != i)
         {
             unsigned char auxR = pixMaisParecido->r;
             unsigned char auxG = pixMaisParecido->g;
@@ -328,6 +317,13 @@ void mapeamentoFor(int tam)
     }
 }
 
+/*
+    Para cada posicao de pixel da imagem desejada, testamos se vale a pena trocar o pixel desta posicao na imagem 
+    de saida 50X com um indice aleatoriamente selecionado. O pixel encontrado mais proximo desta cor, deve ser trocado
+    no fim do laco, assim passando para o proximo pixel da imagem desejada que desejamos encontrar o pixel mais
+    adequado para representa-lo na saida, e repetimos o processo. Enquanto o numero de sucessos(contador) for maior
+    que 40000 continuamos o processo.
+*/
 void mapeamentoRandom(int tam)
 {
     int contador = 0;
@@ -345,21 +341,14 @@ void mapeamentoRandom(int tam)
 
                 RGB picParecido = pic[SAIDA].img[indice];
                 int valeuTroca = 0;
-                if (indice > i){
-                    valeuTroca = valeTrocaCauteloso(i, pixMaisParecido, indice);
-                }
-                else{ //if(i > tam * 0.7){
-                     valeuTroca = valeTrocaCauteloso(i, pixMaisParecido, indice);
-                }
-
+                valeuTroca = valeTrocaCauteloso(i, pixMaisParecido, indice);
+                
                 if (valeuTroca)
                 {
                     pixMaisParecido = indice;
-                    trocou = 1;
-                    //break;
                 }
             }
-            if (trocou)
+            if (pixMaisParecido != i)
             {
                 unsigned int auxR = pic[SAIDA].img[pixMaisParecido].r;
                 unsigned int auxG = pic[SAIDA].img[pixMaisParecido].g;
@@ -437,59 +426,38 @@ int valeTroca(int desej, int atual, int teste)
     if (tesDif < atDif)
         return 1;
 
-    // if (testeDiferenca.r < atualDiferenca.r)
-    // {
-    //     if (testeDiferenca.b < atualDiferenca.b)
-    //     {
-    //         if (testeDiferenca.g < 60)
-    //         {
-    //             return 1;
-    //         }
-    //     }
-    //     else
-    //     {
-    //         if (testeDiferenca.g < atualDiferenca.g && (testeDiferenca.b < 60 || atualDiferenca.b > 120))
-    //         {
-    //             return 1;
-    //         }
-    //     }
-    // }
-    // else
-    // {
-    //     if (testeDiferenca.r < 60 || atualDiferenca.r > 120)
-    //     {
-    //         if (testeDiferenca.b < atualDiferenca.b)
-    //         {
-    //             if (testeDiferenca.g < atualDiferenca.g)
-    //             {
-    //                 return 1;
-    //             }
-    //         }
-    //     }
-    // }
-
     return 0;
 }
 
+
+/*
+A diferença ou distância entre duas cores é uma métrica de interesse na ciência das cores.
+Como a maioria das definições de diferença de cores são distâncias dentro de um espaço de cores, 
+o meio padrão de determinar distâncias é a distância euclidiana.
+*/
 int valeTrocaCauteloso(int desej, int atual, int teste)
 {
-    RGB *rgb1 = &pic[DESEJ].img[desej];
-    RGB* rgba = &pic[DESEJ].img[teste];
-    RGB *rgb2 = &pic[SAIDA].img[atual];
-    RGB *rgb3 = &pic[SAIDA].img[teste];
+    RGB* pixelDesej = &pic[DESEJ].img[desej];
+    RGB* pixelDesejTeste = &pic[DESEJ].img[teste];
+    RGB* pixelAtualParecido = &pic[SAIDA].img[atual];
+    RGB* pixelSaidaTeste = &pic[SAIDA].img[teste];
 
-    unsigned char desejR = rgb1->r;
-    unsigned char desejG = rgb1->g;
-    unsigned char desejB = rgb1->b;
+    unsigned char desejR = pixelDesej->r;
+    unsigned char desejG = pixelDesej->g;
+    unsigned char desejB = pixelDesej->b;
 
-    unsigned char redAtual = rgb2->r;
-    unsigned char greenAtual = rgb2->g;
-    unsigned char blueAtual = rgb2->b;
+    unsigned char redAtual = pixelAtualParecido->r;
+    unsigned char greenAtual = pixelAtualParecido->g;
+    unsigned char blueAtual = pixelAtualParecido->b;
 
-    unsigned char redTeste = rgb3->r;
-    unsigned char greenTeste = rgb3->g;
-    unsigned char blueTeste = rgb3->b;
+    unsigned char redTeste = pixelSaidaTeste->r;
+    unsigned char greenTeste = pixelSaidaTeste->g;
+    unsigned char blueTeste = pixelSaidaTeste->b;
 
+    /*
+    atualDiferenca => Guarda a diferenca de cada uma das 3 cores que compõe o valor RGB do pixel atualmente
+    mais parecido com o pixel desejado. 
+    */
     RGB atualDiferenca;
     atualDiferenca.r = abs(redAtual - desejR);
     atualDiferenca.g = abs(greenAtual - desejG);
@@ -500,6 +468,10 @@ int valeTrocaCauteloso(int desej, int atual, int teste)
     else
         atDif = sqrt(3 * pow(atualDiferenca.r, 2) + 4 * pow(atualDiferenca.g, 2) + 2 * pow(atualDiferenca.b, 2));
 
+    /*
+    testeDiferenca => Guarda a diferenca de cada uma das 3 cores que compõe o valor RGB do pixel no indice que
+    queremos testar com o pixel desejado. 
+    */
     RGB testeDiferenca;
     testeDiferenca.r = abs(redTeste - desejR);
     testeDiferenca.g = abs(greenTeste - desejG);
@@ -510,50 +482,34 @@ int valeTrocaCauteloso(int desej, int atual, int teste)
     else
         tesDif = sqrt(3 * pow(testeDiferenca.r, 2) + 4 * pow(testeDiferenca.g, 2) + 2 * pow(testeDiferenca.b, 2));
 
+    /*
+    desejTesteDif => Contém a diferença de cada uma das 3 cores que compõem o RGB da imagem na posicao que 
+    desejamos testar na imagem desejada, pelas 3 cores do pixel atualmente mais parecido
+    */
     RGB desejTesteDif;
-    desejTesteDif.r = abs(redAtual - rgba->r);
-    desejTesteDif.g = abs(greenAtual - rgba->g);
-    desejTesteDif.b = abs(blueAtual - rgba->b);
+    desejTesteDif.r = abs(redAtual - pixelDesejTeste->r);
+    desejTesteDif.g = abs(greenAtual - pixelDesejTeste->g);
+    desejTesteDif.b = abs(blueAtual - pixelDesejTeste->b);
     int testeAtualDif;
     if ((desejR - testeDiferenca.r) / 2 < 128)
         testeAtualDif = sqrt(2 * pow(desejTesteDif.r, 2) + 4 * pow(desejTesteDif.g, 2) + pow(desejTesteDif.b, 2));
     else
         testeAtualDif = sqrt(3 * pow(desejTesteDif.r, 2) + 4 * pow(desejTesteDif.g, 2) + 2 * pow(desejTesteDif.b, 2));
     
+    /*
+        Testamos se vale a pena ser trocado tanto o pixel de teste, quanto o pixel atualmente mais parecido. Para isto
+        precisamos da distancia entre pixel de teste e o pixel desejado, da distancia entre o pixel atualmente mais 
+        parecido e do pixel desejado, e do pixel atualmente mais parecido com o pixel na posicao de teste da imagem
+        desejada. 
+        
+        Entao, caso o pixel de teste seja mais parecido com o pixel desejado que o pixel atualmente mais parecido 
+        com o pixel desejado, vale trocar o pixel de teste. 
+        Porem, precisamos saber se vale a pena trocar o pixel atualmente mais parecido com o pixel na posicao de teste
+        da imagem desejada, e caso o pixel atualmente mais parecido seja mais próximo deste valor do que o pixel de teste,
+        retornamos 1, pois vale fazer a troca.
+    */
     if (tesDif < atDif && testeAtualDif < tesDif)
         return 1;
-
-
-    // if (testeDiferenca.r < atualDiferenca.r)
-    // {
-    //     if (testeDiferenca.b < atualDiferenca.b)
-    //     {
-    //         if (testeDiferenca.g < 60)
-    //         {
-    //             return 1;
-    //         }
-    //     }
-    //     else
-    //     {
-    //         if (testeDiferenca.g < atualDiferenca.g && (testeDiferenca.b < 60 || atualDiferenca.b > 120))
-    //         {
-    //             return 1;
-    //         }
-    //     }
-    // }
-    // else
-    // {
-    //     if (testeDiferenca.r < 60 || atualDiferenca.r > 120)
-    //     {
-    //         if (testeDiferenca.b < atualDiferenca.b)
-    //         {
-    //             if (testeDiferenca.g < atualDiferenca.g)
-    //             {
-    //                 return 1;
-    //             }
-    //         }
-    //     }
-    // }
 
     return 0;
 }
@@ -625,43 +581,6 @@ void init_genrand64(unsigned long long seed)
     mt[0] = seed;
     for (mti = 1; mti < NN; mti++)
         mt[mti] = (6364136223846793005ULL * (mt[mti - 1] ^ (mt[mti - 1] >> 62)) + mti);
-}
-
-/* initialize by an array with array-length */
-/* init_key is the array for initializing keys */
-/* key_length is its length */
-void init_by_array64(unsigned long long init_key[], unsigned long long key_length)
-{
-    unsigned long long i, j, k;
-    init_genrand64(19650218ULL);
-    i = 1;
-    j = 0;
-    k = (NN > key_length ? NN : key_length);
-    for (; k; k--)
-    {
-        mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 62)) * 3935559000370003845ULL)) + init_key[j] + j; /* non linear */
-        i++;
-        j++;
-        if (i >= NN)
-        {
-            mt[0] = mt[NN - 1];
-            i = 1;
-        }
-        if (j >= key_length)
-            j = 0;
-    }
-    for (k = NN - 1; k; k--)
-    {
-        mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 62)) * 2862933555777941757ULL)) - i; /* non linear */
-        i++;
-        if (i >= NN)
-        {
-            mt[0] = mt[NN - 1];
-            i = 1;
-        }
-    }
-
-    mt[0] = 1ULL << 63; /* MSB is 1; assuring non-zero initial array */
 }
 
 /* generates a random number on [0, 2^64-1]-interval */
