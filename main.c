@@ -3,6 +3,7 @@
 #include <string.h> // Para usar strings
 #include <time.h>
 #include <math.h>
+
 #ifdef WIN32
 #include <windows.h> // includes only in MSWindows not in UNIX
 #include "gl/glut.h"
@@ -51,19 +52,20 @@ Img pic[3];
 
 // Imagem selecionada (0,1,2)
 int sel;
-//meus metodos
 
-void mapeamentoFor(int tam);
-void mapeamentoRandom(int tam);
-void inverteImagem(int tam);
-int valeTroca(int i, int j, int k);
-int valeTrocaCauteloso(int i, int j, int k);
 // Enums para facilitar o acesso às imagens
 #define ORIGEM 0
 #define DESEJ 1
 #define SAIDA 2
 
-//========================================================================
+//NOSSOS METODOS======================================================================================
+void mapeamentoFor(int tam);
+void mapeamentoRandom(int tam);
+void inverteImagem(int tam);
+int valeTroca(int i, int j, int k);
+int valeTrocaCauteloso(int i, int j, int k);
+
+//PARTE DO GERADOR DE NUMEROS ALEATORIOS =============================================================
 #define NN 312
 #define MM 156
 #define MATRIX_A 0xB5026F5AA96619E9ULL
@@ -79,7 +81,7 @@ void init_genrand64(unsigned long long seed);
 void init_by_array64(unsigned long long init_key[], unsigned long long key_length);
 unsigned long long genrand64_int64(void);
 
-//=======================================================================
+//=====================================================================================================
 
 int main(int argc, char *argv[])
 {
@@ -150,11 +152,12 @@ int main(int argc, char *argv[])
     //
     // Neste ponto, voce deve implementar o algoritmo!
     // (ou chamar funcoes para fazer isso)
-    //
-    // Aplica o algoritmo e gera a saida em pic[SAIDA].img...
-    // ...
-    // ...
-    //
+    
+
+    init_genrand64(time(0));
+    mapeamentoRandom(tam);
+
+    
     // Exemplo de manipulação: inverte as cores na imagem de saída
 
     // for(int i=0; i<tam; i++) {
@@ -162,12 +165,7 @@ int main(int argc, char *argv[])
     //     pic[SAIDA].img[i].g = 255 - pic[SAIDA].img[i].g;
     //     pic[SAIDA].img[i].b = 255 - pic[SAIDA].img[i].b;
     // }
-
-    //mapeamentoFor(tam);
-    init_genrand64(time(0));
-    mapeamentoRandom(tam);
-    //mapeamentoFor(tam);
-
+    
     // NÃO ALTERAR A PARTIR DAQUI!
 
     // Cria textura para a imagem de saída
@@ -281,42 +279,6 @@ int cmp(const void *elem1, const void *elem2)
     return r;
 }
 
-void mapeamentoFor(int tam)
-{
-    for (int i = 0; i < tam; i++)
-    {
-        RGB *pixAtual = &(pic[DESEJ].img[i]);
-        int soma = (pixAtual->b + pixAtual->r + pixAtual->g);
-        RGB *pixMaisParecido = &(pic[SAIDA].img[i]);
-        int indiceMaisParecido = i;
-
-        for (int j = i; j < tam; j++)
-        {
-            RGB *pixTeste = &(pic[SAIDA].img[j]);
-            int sucesso = valeTrocaCauteloso(i, indiceMaisParecido, j);
- 
-            if (sucesso)
-            {
-                indiceMaisParecido = j;
-            }
-        }
-        if (indiceMaisParecido != i)
-        {
-            unsigned char auxR = pixMaisParecido->r;
-            unsigned char auxG = pixMaisParecido->g;
-            unsigned char auxB = pixMaisParecido->b;
-
-            (*pixMaisParecido).r = pic[SAIDA].img[i].r;
-            (*pixMaisParecido).g = pic[SAIDA].img[i].g;
-            (*pixMaisParecido).b = pic[SAIDA].img[i].b;
-
-            pic[SAIDA].img[i].r = auxR;
-            pic[SAIDA].img[i].g = auxG;
-            pic[SAIDA].img[i].b = auxB;
-        }
-    }
-}
-
 /*
     Para cada posicao de pixel da imagem desejada, testamos se vale a pena trocar o pixel desta posicao na imagem 
     de saida 50X com um indice aleatoriamente selecionado. O pixel encontrado mais proximo desta cor, deve ser trocado
@@ -335,7 +297,13 @@ void mapeamentoRandom(int tam)
             int pixMaisParecido = i;
             char trocou = 0;
 
-            for (int j = 0; j < 50; j++)
+            /* Para j< x
+                quanto menor o x -> pro: +rápido  contra: -qualidade
+                quanto maior o x -> pro: +qualidade  contra: +lento
+                
+                
+            */
+            for (int j = 0; j < 40; j++)
             {
                 int indice = genrand64_int64() % tam;
 
@@ -367,73 +335,11 @@ void mapeamentoRandom(int tam)
     } while (contador > 40000);
 }
 
-void inverteImagem(int tam)
-{
-    for (int i = 0; i < (tam - 1) / 2; i++)
-    {
-        unsigned char auxR = pic[SAIDA].img[i].r;
-        unsigned char auxG = pic[SAIDA].img[i].g;
-        unsigned char auxB = pic[SAIDA].img[i].b;
-
-        pic[SAIDA].img[i].r = pic[SAIDA].img[tam - 1 - i].r;
-        pic[SAIDA].img[i].g = pic[SAIDA].img[tam - 1 - i].g;
-        pic[SAIDA].img[i].b = pic[SAIDA].img[tam - 1 - i].b;
-
-        pic[SAIDA].img[tam - 1 - i].r = auxR;
-        pic[SAIDA].img[tam - 1 - i].g = auxG;
-        pic[SAIDA].img[tam - 1 - i].b = auxB;
-    }
-}
-
-int valeTroca(int desej, int atual, int teste)
-{
-    RGB *rgb1 = &pic[DESEJ].img[desej];
-    RGB *rgb2 = &pic[SAIDA].img[atual];
-    RGB *rgb3 = &pic[SAIDA].img[teste];
-
-    unsigned char desejR = rgb1->r;
-    unsigned char desejG = rgb1->g;
-    unsigned char desejB = rgb1->b;
-
-    unsigned char redAtual = rgb2->r;
-    unsigned char greenAtual = rgb2->g;
-    unsigned char blueAtual = rgb2->b;
-
-    unsigned char redTeste = rgb3->r;
-    unsigned char greenTeste = rgb3->g;
-    unsigned char blueTeste = rgb3->b;
-
-    RGB atualDiferenca;
-    atualDiferenca.r = abs(redAtual - desejR);
-    atualDiferenca.g = abs(greenAtual - desejG);
-    atualDiferenca.b = abs(blueAtual - desejB);
-    double atDif;
-    if ((desejR - atualDiferenca.r) / 2 < 128)
-        atDif = sqrt(2 * pow(atualDiferenca.r, 2) + 4 * pow(atualDiferenca.g, 2) + pow(atualDiferenca.b, 2));
-    else
-        atDif = sqrt(3 * pow(atualDiferenca.r, 2) + 4 * pow(atualDiferenca.g, 2) + 2 * pow(atualDiferenca.b, 2));
-
-    RGB testeDiferenca;
-    testeDiferenca.r = abs(redTeste - desejR);
-    testeDiferenca.g = abs(greenTeste - desejG);
-    testeDiferenca.b = abs(blueTeste - desejB);
-    int tesDif;
-    if ((desejR - testeDiferenca.r) / 2 < 128)
-        tesDif = sqrt(2 * pow(testeDiferenca.r, 2) + 4 * pow(testeDiferenca.g, 2) + pow(testeDiferenca.b, 2));
-    else
-        tesDif = sqrt(3 * pow(testeDiferenca.r, 2) + 4 * pow(testeDiferenca.g, 2) + 2 * pow(testeDiferenca.b, 2));
-
-    if (tesDif < atDif)
-        return 1;
-
-    return 0;
-}
-
-
 /*
 A diferença ou distância entre duas cores é uma métrica de interesse na ciência das cores.
 Como a maioria das definições de diferença de cores são distâncias dentro de um espaço de cores, 
 o meio padrão de determinar distâncias é a distância euclidiana.
+Ao buscar mais sobre a diferença de cores, encontramos essa explicação disponivel em https://en.wikipedia.org/wiki/Color_difference
 */
 int valeTrocaCauteloso(int desej, int atual, int teste)
 {
@@ -514,7 +420,7 @@ int valeTrocaCauteloso(int desej, int atual, int teste)
     return 0;
 }
 
-//
+
 // Funções de callback da OpenGL
 //
 // SÓ ALTERE SE VOCÊ TIVER ABSOLUTA CERTEZA DO QUE ESTÁ FAZENDO!
@@ -623,28 +529,3 @@ unsigned long long genrand64_int64(void)
 
     return x;
 }
-
-/* generates a random number on [0, 2^63-1]-interval 
-long long genrand64_int63(void)
-{
-    return (long long)(genrand64_int64() >> 1);
-}
-
-/* generates a random number on [0,1]-real-interval 
-double genrand64_real1(void)
-{
-    return (genrand64_int64() >> 11) * (1.0/9007199254740991.0);
-}
-
-/* generates a random number on [0,1)-real-interval 
-double genrand64_real2(void)
-{
-    return (genrand64_int64() >> 11) * (1.0/9007199254740992.0);
-}
-
-/* generates a random number on (0,1)-real-interval 
-double genrand64_real3(void)
-{
-    return ((genrand64_int64() >> 12) + 0.5) * (1.0/4503599627370496.0);
-}
-*/
