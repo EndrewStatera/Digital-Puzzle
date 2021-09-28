@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h> // Para usar strings
 #include <time.h>
+#include <math.h>
 
 #ifdef WIN32
 #include <windows.h> // includes only in MSWindows not in UNIX
@@ -52,20 +53,16 @@ Img pic[3];
 // Imagem selecionada (0,1,2)
 int sel;
 
-//meus metodos
-
-void mapeamentoFor(int tam);
-void mapeamentoRandom(int tam);
-void inverteImagem(int tam);
-int valeTroca(int i, int j, int k);
-int contador;
-
 // Enums para facilitar o acesso às imagens
 #define ORIGEM 0
 #define DESEJ 1
 #define SAIDA 2
 
-//========================================================================
+//NOSSA FUNCOES ===================================================================================
+void mapeamentoRandom(int tam);
+int valeTroca(int i, int j, int k);
+
+//Parte do GERADOR DE NUMEROS ALEATORIOS ==========================================================
 #define NN 312
 #define MM 156
 #define MATRIX_A 0xB5026F5AA96619E9ULL
@@ -81,7 +78,7 @@ void init_genrand64(unsigned long long seed);
 void init_by_array64(unsigned long long init_key[], unsigned long long key_length);
 unsigned long long genrand64_int64(void);
 
-//=======================================================================
+//==================================================================================================
 
 int main(int argc, char *argv[])
 {
@@ -140,7 +137,7 @@ int main(int argc, char *argv[])
     gluOrtho2D(0.0, width, height, 0.0);
     glMatrixMode(GL_MODELVIEW);
 
-    //srand(time(0)); // Inicializa gerador aleatório (se for usar random)
+    srand(time(0)); // Inicializa gerador aleatório (se for usar random)
 
     printf("Processando...\n");
 
@@ -154,12 +151,8 @@ int main(int argc, char *argv[])
     // (ou chamar funcoes para fazer isso)
     //
     // Aplica o algoritmo e gera a saida em pic[SAIDA].img...
-    //mapeamentoFor(tam);
-    contador = 5;
     init_genrand64(time(0));
-
     mapeamentoRandom(tam);
-
     //
     // Exemplo de manipulação: inverte as cores na imagem de saída
 
@@ -169,6 +162,7 @@ int main(int argc, char *argv[])
     //     pic[SAIDA].img[i].b = 255 - pic[SAIDA].img[i].b;
     // }
 
+    
     // NÃO ALTERAR A PARTIR DAQUI!
 
     // Cria textura para a imagem de saída
@@ -278,71 +272,68 @@ int cmp(const void *elem1, const void *elem2)
 
 void mapeamentoRandom(int tam)
 {
-
-    for (int i = 0; i < tam; i++)
+    int contTrocas = 0;
+    do
     {
-        int trocou = 0;
-
-        for (int j = 0; j < 3000; j++) //para achar a troca mais favoravel
+        contTrocas = 0;
+        for (int i = 0; i < tam; i++)
         {
-            int indice = genrand64_int64() % tam;
+            int trocou = 0;
+            int pixMaisParecido = i;
 
-            if (indice >= i)
+            /* Para j < x 
+                quanto menor for o x  -> pro: +rapido      contra: -qualidade
+                quanto maior for o x  -> pro: +qualidade   contra: +lento
+
+                **aconselhamos ir só até 50, apos este valor se torna muito demorado
+            */
+            for (int j = 0; j < 40; j++) 
             {
-                trocou = valeTroca(i, i, indice);
+                int indice = genrand64_int64() % tam;
+
+                int valeuTroca = 0;
+                if (indice > i)
+                {
+                    valeuTroca = valeTroca(i, pixMaisParecido, indice);
+                }
+               else
+                { //if(i > tam * 0.7){
+                    valeuTroca = valeTroca(i, pixMaisParecido, indice);
+               }
+
+                if (valeuTroca)
+                {
+                    pixMaisParecido = indice;
+                    trocou = 1;
+                }
             }
 
             if (trocou)
             {
-                //RGB picParecido = pic[SAIDA].img[indice];
+                unsigned int auxR = pic[SAIDA].img[pixMaisParecido].r;
+                unsigned int auxG = pic[SAIDA].img[pixMaisParecido].g;
+                unsigned int auxB = pic[SAIDA].img[pixMaisParecido].b;
 
-                unsigned int auxR = pic[SAIDA].img[indice].r;
-                unsigned int auxG = pic[SAIDA].img[indice].g;
-                unsigned int auxB = pic[SAIDA].img[indice].b;
-
-                pic[SAIDA].img[indice].r = pic[SAIDA].img[i].r;
-                pic[SAIDA].img[indice].g = pic[SAIDA].img[i].g;
-                pic[SAIDA].img[indice].b = pic[SAIDA].img[i].b;
+                pic[SAIDA].img[pixMaisParecido].r = pic[SAIDA].img[i].r;
+                pic[SAIDA].img[pixMaisParecido].g = pic[SAIDA].img[i].g;
+                pic[SAIDA].img[pixMaisParecido].b = pic[SAIDA].img[i].b;
 
                 pic[SAIDA].img[i].r = auxR;
                 pic[SAIDA].img[i].g = auxG;
                 pic[SAIDA].img[i].b = auxB;
 
-                break;
+                contTrocas++;
             }
         }
-    }
-
-    // tentando fazer algo recursivo
-    if (--contador)
-    {
-        mapeamentoRandom(tam);
-    }
+    }while (contTrocas > 20000);
 }
 
-void inverteImagem(int tam)
+int valeTroca(int desej, int atual, int teste)
 {
-    for (int i = 0; i < (tam - 1) / 2; i++)
-    {
-        unsigned char auxR = pic[SAIDA].img[i].r;
-        unsigned char auxG = pic[SAIDA].img[i].g;
-        unsigned char auxB = pic[SAIDA].img[i].b;
-
-        pic[SAIDA].img[i].r = pic[SAIDA].img[tam - 1 - i].r;
-        pic[SAIDA].img[i].g = pic[SAIDA].img[tam - 1 - i].g;
-        pic[SAIDA].img[i].b = pic[SAIDA].img[tam - 1 - i].b;
-
-        pic[SAIDA].img[tam - 1 - i].r = auxR;
-        pic[SAIDA].img[tam - 1 - i].g = auxG;
-        pic[SAIDA].img[tam - 1 - i].b = auxB;
-    }
-}
-
-int valeTroca(int i, int j, int k)
-{
-    RGB *rgb1 = &pic[DESEJ].img[i]; //cor desejada
-    RGB *rgb2 = &pic[SAIDA].img[j]; //cor atual
-    RGB *rgb3 = &pic[SAIDA].img[k]; //cor que veio do sorteio
+    RGB *rgb1 = &pic[DESEJ].img[desej];
+    RGB* rgba = &pic[DESEJ].img[teste];
+    RGB *rgb2 = &pic[SAIDA].img[atual];
+    RGB *rgb3 = &pic[SAIDA].img[teste];
 
     unsigned char desejR = rgb1->r;
     unsigned char desejG = rgb1->g;
@@ -366,45 +357,35 @@ int valeTroca(int i, int j, int k)
     testeDiferenca.g = abs(greenTeste - desejG);
     testeDiferenca.b = abs(blueTeste - desejB);
 
-   
-    if (testeDiferenca.r < atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b <= atualDiferenca.b )
-    {
-        return 1;
-    }
-    else if (testeDiferenca.r <= atualDiferenca.r && testeDiferenca.g < atualDiferenca.g && testeDiferenca.b <= atualDiferenca.b)
-    {
-        return 1;
-    }
-    else if (testeDiferenca.r <= atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b < atualDiferenca.b)
-    {
-        return 1;
-    }  // tentando arrumar com mais comparações mais pouca diferença
-    else if (testeDiferenca.r > atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b <= atualDiferenca.b && abs(testeDiferenca.r - atualDiferenca.r) <= 10)
-    {
-        return 1;
-    }
-    else if (testeDiferenca.r <= atualDiferenca.r && testeDiferenca.g > atualDiferenca.g && testeDiferenca.b <= atualDiferenca.b && abs(testeDiferenca.g - atualDiferenca.g) <= 255)
-    {
-        return 1;
-    }
-    else if (testeDiferenca.r <= atualDiferenca.r && testeDiferenca.g <= atualDiferenca.g && testeDiferenca.b > atualDiferenca.b && abs(testeDiferenca.b - atualDiferenca.b) <= 15)
-    {
-        return 1;
-    }
+    RGB desejTesteDif;
+    desejTesteDif.r = abs(redAtual - rgba->r);
+    desejTesteDif.g = abs(greenAtual - rgba->g);
+    desejTesteDif.b = abs(blueAtual - rgba->b);
 
-   
-/*
-    if (testeDiferenca.r < atualDiferenca.r && testeDiferenca.r <= aux)
-    {
-        if (testeDiferenca.g < atualDiferenca.g && testeDiferenca.g <= aux)
-        {
-            if (testeDiferenca.b < atualDiferenca.b && testeDiferenca.b <= aux)
-            {
-                return 1;
-            }
-        }
-    }
-*/
+    double atDif;
+
+    if ((desejR - atualDiferenca.r) / 2 < 128)
+        atDif = sqrt(2 * pow(atualDiferenca.r, 2) + 4 * pow(atualDiferenca.g, 2) + pow(atualDiferenca.b, 2));
+    else
+        atDif = sqrt(3 * pow(atualDiferenca.r, 2) + 4 * pow(atualDiferenca.g, 2) + 2 * pow(atualDiferenca.b, 2));
+
+    int tesDif;
+
+    if ((desejR - testeDiferenca.r) / 2 < 128)
+        tesDif = sqrt(2 * pow(testeDiferenca.r, 2) + 4 * pow(testeDiferenca.g, 2) + pow(testeDiferenca.b, 2));
+    else
+        tesDif = sqrt(3 * pow(testeDiferenca.r, 2) + 4 * pow(testeDiferenca.g, 2) + 2 * pow(testeDiferenca.b, 2));
+
+    int testeAtualDif;
+
+    if ((desejR - testeDiferenca.r) / 2 < 128)
+        testeAtualDif = sqrt(2 * pow(desejTesteDif.r, 2) + 4 * pow(desejTesteDif.g, 2) + pow(desejTesteDif.b, 2));
+    else
+        testeAtualDif = sqrt(3 * pow(desejTesteDif.r, 2) + 4 * pow(desejTesteDif.g, 2) + 2 * pow(desejTesteDif.b, 2));
+    
+    if (tesDif < atDif && testeAtualDif < tesDif)
+        return 1;
+
     return 0;
 }
 
@@ -475,43 +456,6 @@ void init_genrand64(unsigned long long seed)
     mt[0] = seed;
     for (mti = 1; mti < NN; mti++)
         mt[mti] = (6364136223846793005ULL * (mt[mti - 1] ^ (mt[mti - 1] >> 62)) + mti);
-}
-
-/* initialize by an array with array-length */
-/* init_key is the array for initializing keys */
-/* key_length is its length */
-void init_by_array64(unsigned long long init_key[], unsigned long long key_length)
-{
-    unsigned long long i, j, k;
-    init_genrand64(19650218ULL);
-    i = 1;
-    j = 0;
-    k = (NN > key_length ? NN : key_length);
-    for (; k; k--)
-    {
-        mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 62)) * 3935559000370003845ULL)) + init_key[j] + j; /* non linear */
-        i++;
-        j++;
-        if (i >= NN)
-        {
-            mt[0] = mt[NN - 1];
-            i = 1;
-        }
-        if (j >= key_length)
-            j = 0;
-    }
-    for (k = NN - 1; k; k--)
-    {
-        mt[i] = (mt[i] ^ ((mt[i - 1] ^ (mt[i - 1] >> 62)) * 2862933555777941757ULL)) - i; /* non linear */
-        i++;
-        if (i >= NN)
-        {
-            mt[0] = mt[NN - 1];
-            i = 1;
-        }
-    }
-
-    mt[0] = 1ULL << 63; /* MSB is 1; assuring non-zero initial array */
 }
 
 /* generates a random number on [0, 2^64-1]-interval */
