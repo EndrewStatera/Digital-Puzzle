@@ -346,9 +346,9 @@ void mapeamentoRandom(int tam)
                 RGB picParecido = pic[SAIDA].img[indice];
                 int valeuTroca = 0;
                 if (indice > i){
-                    valeuTroca = valeTroca(i, pixMaisParecido, indice);
+                    valeuTroca = valeTrocaCauteloso(i, pixMaisParecido, indice);
                 }
-                else{ 
+                else{ //if(i > tam * 0.7){
                      valeuTroca = valeTrocaCauteloso(i, pixMaisParecido, indice);
                 }
 
@@ -375,7 +375,7 @@ void mapeamentoRandom(int tam)
                 contador++;
             }
         }
-    } while (contador > 20000);
+    } while (contador > 40000);
 }
 
 void inverteImagem(int tam)
@@ -437,6 +437,37 @@ int valeTroca(int desej, int atual, int teste)
     if (tesDif < atDif)
         return 1;
 
+    // if (testeDiferenca.r < atualDiferenca.r)
+    // {
+    //     if (testeDiferenca.b < atualDiferenca.b)
+    //     {
+    //         if (testeDiferenca.g < 60)
+    //         {
+    //             return 1;
+    //         }
+    //     }
+    //     else
+    //     {
+    //         if (testeDiferenca.g < atualDiferenca.g && (testeDiferenca.b < 60 || atualDiferenca.b > 120))
+    //         {
+    //             return 1;
+    //         }
+    //     }
+    // }
+    // else
+    // {
+    //     if (testeDiferenca.r < 60 || atualDiferenca.r > 120)
+    //     {
+    //         if (testeDiferenca.b < atualDiferenca.b)
+    //         {
+    //             if (testeDiferenca.g < atualDiferenca.g)
+    //             {
+    //                 return 1;
+    //             }
+    //         }
+    //     }
+    // }
+
     return 0;
 }
 
@@ -491,6 +522,38 @@ int valeTrocaCauteloso(int desej, int atual, int teste)
     
     if (tesDif < atDif && testeAtualDif < tesDif)
         return 1;
+
+
+    // if (testeDiferenca.r < atualDiferenca.r)
+    // {
+    //     if (testeDiferenca.b < atualDiferenca.b)
+    //     {
+    //         if (testeDiferenca.g < 60)
+    //         {
+    //             return 1;
+    //         }
+    //     }
+    //     else
+    //     {
+    //         if (testeDiferenca.g < atualDiferenca.g && (testeDiferenca.b < 60 || atualDiferenca.b > 120))
+    //         {
+    //             return 1;
+    //         }
+    //     }
+    // }
+    // else
+    // {
+    //     if (testeDiferenca.r < 60 || atualDiferenca.r > 120)
+    //     {
+    //         if (testeDiferenca.b < atualDiferenca.b)
+    //         {
+    //             if (testeDiferenca.g < atualDiferenca.g)
+    //             {
+    //                 return 1;
+    //             }
+    //         }
+    //     }
+    // }
 
     return 0;
 }
